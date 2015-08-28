@@ -22,3 +22,4 @@ Thumbs.db
 *.zip
 wp-content/theme/twenty*/
 wp-content/plugins/hello.php
+wp-config.php

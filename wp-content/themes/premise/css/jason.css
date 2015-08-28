@@ -1,0 +1,53 @@
+.product-pager-wrapper {
+	height: auto !important;
+}
+section#catalog .box .image img {
+	min-width: 100%;
+}
+#cycle-2 {
+	width: 100%;
+	margin: 0 auto;
+}
+#slideshow-2 {
+	position: relative;
+	margin-bottom: 30px;
+}
+#slideshow-2 .slide-pager {
+	/* absolute positioning breaks shit - you can't click on a thumbnail to update the main image */
+	/*
+	position: relative; 
+	top: 40px;
+	width: 100%;
+	height: auto;
+	z-index: 9;
+	margin-bottom: 30px;
+	*/
+}
+#slideshow-2 .slide-pager .cycle-prev {
+	float: left;
+	margin-top: 14px;
+	margin-left: -24px;
+	font-size: 24px;
+}
+#slideshow-2 .slide-pager .cycle-next {
+	float: right;
+	margin-top: 14px;
+	margin-right: -24px;
+	font-size: 24px;
+}
+#catalog .box .image {
+	width: 320px;
+	height: 220px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+.catalog-images {
+    /*
+	width: 100% !important;
+	margin-right: auto;
+    */
+}

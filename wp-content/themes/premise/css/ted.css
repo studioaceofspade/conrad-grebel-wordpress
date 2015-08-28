@@ -1,0 +1,71 @@
+.catalog-images {
+    background: #fff;
+    padding: 20px;}
+.catalog-images h2 {
+    color: #777;
+    font-weight: 300;
+    line-height: 50px;
+    margin-bottom: 15px;}
+#slideshow-pager {
+    padding: 0 20px;
+    position: relative;
+    margin-bottom: 15px;}
+#slideshow-pager .cycle-slide {
+    text-align: center;}
+#slideshow-main {
+    position: relative;}
+.pager-button,
+.pager-button:focus,
+.pager-button:hover {
+    position: absolute;
+    display: inline-block;
+    font-size: 20px;
+    line-height: 20px;
+    height: 36px;
+    top: 20px;
+    color: #14B9D6;
+    background-color: #fff;
+    -webkit-border-radius: 49px;
+    border-radius: 49px;}
+.cycle-prev {
+    left: 0px;}
+.cycle-next {
+    right: 0px;}
+.cycle-prev i,
+.cycle-next i {
+    margin-top: -4px;}
+.cycle-prev i {
+    margin-right: -1px;}
+.cycle-next i {
+    margin-left: -1px;}
+#slideshow-main .pager-button {
+    z-index: 100;
+    top: 165px;}
+#slideshow-pager .cycle-slide img {
+    border-bottom: 2px solid #fff;
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;}
+#slideshow-pager .cycle-slide.cycle-slide-active img {
+    border-bottom: 2px solid #14B9D6;}
+#slideshow-main .cycle-slide {
+    width: 542.5px;
+    text-align: center;}
+.catalog-about h2 {
+    font-size: 23px;
+    padding: 12px;}
+.catalog-about h3 {
+    font-size: 21px;}
+.custom-caption {
+    margin-top: 20px;}
+
+#header .menu {
+    cursor: pointer;}
+#main-nav ul li a:hover {
+    background-color: #323A45;
+    color: #fff;}
+#main-nav ul li a:hover .nav-icon {
+    background-color: #14B9D6;
+    color: #fff;}

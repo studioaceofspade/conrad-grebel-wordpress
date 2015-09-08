@@ -783,8 +783,15 @@ function updateLegTableData(button, target, action) {
                 .html(legTable[target]);
             
             
-			console.log('Adjusting table length by ' + adjustAmount + '".');
-            console.log('Table length is now: '+legTable.length);
+			if(legTable[target] < 42) {
+                maxLegLeaves = 1;
+                if(legTable['leaves'] > 1) {
+                    legTable['leaves'] = 1;
+                    $('.leaf-control .count').html('1');
+                }
+            } else {
+                maxLegLeaves = 7;
+            }
 		}
 	} else {
 

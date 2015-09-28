@@ -307,6 +307,21 @@ get_header(); ?>
                     
                 <?php elseif(has_term('trestle-base','option_type')) : ?>
                     <?php include(locate_template('option-types/trestle-base.php')); ?>
+                
+                <?php elseif(has_term('server','option_type')) : ?>
+                    <?php include(locate_template('option-types/server.php')); ?>
+                    
+                <?php elseif(has_term('server-hardware','option_type')) : ?>
+                    <?php include(locate_template('option-types/server-hardware.php')); ?>
+                    
+                <?php elseif(has_term('server-glass','option_type')) : ?>
+                    <?php include(locate_template('option-types/server-glass.php')); ?>
+                    
+                <?php elseif(has_term('server-drawer','option_type')) : ?>
+                    <?php include(locate_template('option-types/server-drawer.php')); ?>
+                    
+                <?php elseif(has_term('hutch','option_type')) : ?>
+                    <?php include(locate_template('option-types/hutch.php')); ?>
                     
                     
                 <?php endif; ?>

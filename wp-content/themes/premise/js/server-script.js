@@ -1,0 +1,831 @@
+var serverData = {};
+var collection = {};
+
+(function($) { 
+	$(document).ready(function() {
+        stepControls();
+        setServerObject();
+        monitorImage();
+        // configureReview();
+        // reviewButtonController();
+        editButtonController();
+        setServerPricing();
+	});	
+
+function setServerObject() { 
+    
+    // Loop through each step to find the selected default option
+    var selected    = new Array;
+    var imageParts  = {};
+    
+    if($('#servers').data('edit') === '') {
+               
+        $('.step').each(function(index) {
+            
+            // Setup our variables
+            $step = $(this);
+            var name = $step.find('.step-header h2').html();
+            var stepId = $step.data('step-id');
+            
+            var canProgress = false;
+            try {
+                if(serverData.skips.indexOf(stepId) < 0) {
+                   canProgress = true;
+                }
+            } catch (e) {
+                canProgress = true;
+            }
+                
+            if(canProgress) {      
+                                
+                // If this step contains something to be selected
+                if($step.find('.selected').length > 0 ) {
+                    
+                    $selected = $step.find('.selected');
+                    
+                    // Figure out what we need to skip here
+                    var skipString = $selected.siblings('.option-settings').find('.skips').data('steps');            
+                    var skipArray;
+                    
+                    // If we have things we need to skip
+                    if(skipString) {
+                        skipArray = skipString.split(',');      
+                    }
+                    
+                    // Handle pricing data on the object
+                    $pricing        = $selected.siblings('.option-settings').find('.step-pricing');
+                    $relatedPricing = $selected.siblings('.option-settings').find('.option-pricing');
+                    
+                    var relatedPrices = {}
+                    $relatedPricing.each(function(index) {
+                        $optionPrice = $(this);
+                        relatedPrices[$optionPrice.data('related-option')] = {
+                            'type'      : $optionPrice.data('option-price-type'),
+                            'rate'      : $optionPrice.data('option-flat-rate'),
+                            'percent'   : $optionPrice.data('option-percentage')
+                        }
+                    });
+                    
+                    // Create a selected reference object
+                    selected.push($selected.data('option-id'));        
+                    
+                    // Grab our renders
+                    $renders        = $selected.siblings('.option-settings').find('.render-object');
+                    
+                    // Test to see if this is a normal render or one controlled by other options
+                    var relatedRenderOption = $renders.first().attr('data-render-related');
+                    if(typeof relatedRenderOption !== typeof undefined && relatedRenderOption !== false) {
+    
+                        var matched     = false;
+                        var renderData  = {}
+                        $renders.each(function() {
+                            var $renderObject        = $(this);
+                            var relatedRenderOption = $renderObject.data('render-related');
+                            
+                            if($('[data-option-id="' + relatedRenderOption + '"]').hasClass('selected') && matched == false) {
+                            
+                                renderData['related']   = $renderObject.data('render-related');
+                                renderData['type']      = $renderObject.data('render-type');
+                                renderData['image']     = $renderObject.data('render-image');
+                                
+                                var masks   = $renderObject.data('render-masks');
+                                masks       = masks.split(',');
+                                
+                                renderData['masks'] = masks;
+                                
+                                matched = true;
+                            } 
+                            
+                        });
+                        
+                        imageParts[renderData['type']] = renderData;
+                        
+                    } else {
+                       
+                    }
+                    
+                    if($step.data('step-types') != '') {
+                        var typeString = $step.data('step-types');
+                        var typeArray = typeString.split(',');
+                        
+                        var $textureData = $selected.siblings('.option-settings').find('.texture-data');
+                        
+                        if(typeArray.indexOf('top-color') >= 0) {
+                            imageParts['top-color'] = $textureData.data('texture-url');
+                        }
+                        
+                        if(typeArray.indexOf('bottom-color') >= 0) {
+                            imageParts['bottom-color'] = $textureData.data('texture-url');
+                        }
+                        
+                    }
+                    
+                    
+                    // Configure the object for the current step
+                    if(stepId != 'choose-a-server-style' ) {
+                        serverData[stepId] = {
+                            'name'      : $step.find('.step-header h2').html(),
+                            'selected'  : [$selected.data('option-id'),$selected.find('.title').text()],
+                            'skip'      : skipArray,
+                            'type'      : $step.data('step-types'),
+                            'pricing'   : {
+                                'type'      : $pricing.data('price-type'),
+                                'rate'      : $pricing.data('flat-rate'),
+                                'percent'   : $pricing.data('percentage'),
+                                'options'   : relatedPrices
+                            }
+                        }
+                    } else {
+                        
+                        $serverPricing = $selected.siblings('.option-settings').find('.server-pricing');
+                        
+                        serverData[stepId] = {
+                            'name'      : $step.find('.step-header h2').html(),
+                            'selected'  : [$selected.data('option-id'),$selected.find('.title').text()],
+                            'skip'      : skipArray,
+                            'type'      : $step.data('step-types'),
+                            'model'     : $serverPricing.data('model'),
+                            'pricing'   : {
+                                'cherry'        : $serverPricing.data('premium-price'),
+                                'oak'           : $serverPricing.data('base-price'),
+                                'hutch-cherry'  : $serverPricing.data('hutch-premium-price'),
+                                'hutch-oak'     : $serverPricing.data('hutch_base_price'),
+                                'drawers'       : $serverPricing.data('drawers'),
+                            }
+                        }
+                        
+                    }
+                    
+                    // See if we have any skips yet, if not add them in
+                    if(!serverData.hasOwnProperty('skips')) {
+                        serverData['skips'] = new Array();
+                        serverData['skips'] = skipArray;
+                    } else { // If we already have skips, fold in ones that do not exist yet
+         
+                        // Make sure that we even have any we may need to add in
+                        if(skipArray) {
+                            var previousSkips = serverData['skips'];
+                            
+                            newSkips = arrayUnique(previousSkips.concat(skipArray));
+                            
+                            serverData['skips'] = newSkips;
+                        }
+                    }            
+                }
+            } else {
+                
+                // If we are skipping it, remove it from our object
+                delete serverData[stepId];          
+            }
+        });    
+        
+        serverData['selectedReference'] = selected;
+        serverData['imageParts']        = imageParts; 
+        serverData['furnitureType']     = [$('.furniture-container').attr('id'), $('.furniture-container').data('type-title')];
+
+    } else {
+        console.log('Loading a table to be edited');
+        loadCompletedServer();  
+    }
+
+    // Setup our image parts
+    
+    /*
+    tableName = serverData['choose-a-trestle-table'].selected[0];
+    $selectedTable = $('[data-option-id="' + tableName + '"]').siblings('.option-settings');
+    baseRender = $selectedTable.find('.base-render').data('render');
+    baseMasks  = $selectedTable.find('.base-render').data('masks').split(',');
+    
+    if($selectedTable.find('.top-render').length > 1) {
+        edge       = $('[data-step-id="choose-an-edge-profile"]').find('.selected').data('option-id');
+    } else {
+        edge = 'natural';
+    }
+    
+    topRender = $selectedTable.find('.top-render[data-edge="' + edge + '"]').data('render');
+    topMasks  = $selectedTable.find('.top-render[data-edge="' + edge + '"]').data('masks').split(',');
+    
+    ttop = {
+        'image' : topRender,
+        'masks' : topMasks
+    }
+    
+    tbase = {
+        'image' : baseRender,
+        'masks' : baseMasks
+    }
+    
+    chain = createServerChain(ttop,tbase,serverData.imageParts['top-color'],serverData.imageParts['bottom-color']);
+    serverData.imageParts['chain'] = chain;
+    $('.render .render-image').attr('src',chain);
+    
+    */
+    configureReview();
+    console.log(serverData);
+}
+
+function reviewButtonController() {
+    
+    /*
+    $('.review-jump').click(function(e) {
+        e.preventDefault();
+        
+        $('.step.active').removeClass('active');
+        $('.step[data-step-id="trestle-table-review"]').addClass('active');
+        $('.render.table').show();
+        
+        if(serverData.skips) {
+            delete serverData.skips;
+        }
+        
+        setServerObject();
+        setServerPricing();
+        setRenderControls();    
+        configureReview();      
+        editButtonController(); 
+    });
+    */
+}
+
+function editButtonController() {
+    $('.edit').click(function(e) {
+        e.preventDefault();
+        
+        $('.step.active').removeClass('active');
+        $('.step[data-step-id="' + $(this).data('edit-step') + '"]').addClass('active');
+        
+        console.log($('.step[data-step-id="' + $(this).data('edit-step') + '"]'));
+        
+        if(serverData.skips) {
+            delete serverData.skips;
+        }
+        setServerObject();
+        setServerPricing();
+        setRenderControls();
+        configureReview();
+    });
+}
+
+function setServerPricing() {
+    
+    $price = $('.price .total');
+    
+    var wood        = serverData['choose-a-wood-type'].selected[0];
+    var server      = serverData['choose-a-server-style'];
+    var addons      = new Array();
+    var percents    = new Array();
+    var amount      = 0;
+    
+    for (var step in serverData) {
+        
+        if(step != 'amount' && 
+           step != 'skips' && 
+           step != 'selectedReference' && 
+           step != 'furnitureType' &&
+           step != 'dimensions' &&
+           step != 'imageParts') {
+        
+            if("pricing" in serverData[step]) {
+                
+                if("type" in serverData[step].pricing) {
+                    
+                    if(serverData[step].pricing.type == 'flat') {
+                        addons.push(serverData[step].pricing.rate);
+                    } else if (serverData[step].pricing.type == 'percentage') {
+                        percents.push(serverData[step].pricing.percent);
+                    }
+                }
+                
+                if("options" in serverData[step].pricing) {
+                    
+                    for ( option in serverData[step].pricing.options ) {
+                        
+                        if(serverData[step].pricing.options[option].type == 'flat') {
+                            if(serverData['selectedReference'].indexOf(option) != -1) {
+                                addons.push(serverData[step].pricing.options[option].rate);
+                            }
+                        } else if(serverData[step].pricing.options[option].type == 'percentage') {
+                            if(serverData['selectedReference'].indexOf(option) != -1) {
+                                percents.push(serverData[step].pricing.options[option].percent);
+                            }
+                        }                    
+                    }
+                }
+                
+            } 
+        }
+    }
+
+
+    if(wood == 'oak' || wood == 'maple') {
+        amount      = server.pricing.oak;
+    } else {
+        amount      = server.pricing.cherry;  
+    }
+
+    var addonTotal = 0;
+    for (var x = 0; x < addons.length; x++) {
+        addonTotal += addons[x];
+    }
+    
+    for (var y = 0; y < percents.length; y++) {
+        amount      = amount * (1 + percents[y]/100);
+    }
+
+    var final = amount + addonTotal;
+    var cgPrice = final;
+    
+    // Set the pricing by retailer rules
+    var markup = 100;
+    if($('.retailer-meta').data('membership-level') == 'one') {
+        markup = 100;
+    } else if ($('.retailer-meta').data('membership-level') == 'two') {
+        markup = 105;
+    } else if ($('.retailer-meta').data('membership-level') == 'three') {
+        markup = 110;
+    }
+    var retailerBase = cgPrice * (markup/100);
+    
+    // Add in the freight charges
+    var strTest = $('.retailer-meta').data('freight-mod').toString();
+    var retailerWithFreight = retailerBase;
+    if($('.retailer-meta').data('freight-mod') > 0 && strTest.length > 0) {
+        retailerWithFreight = retailerBase * (($('.retailer-meta').data('freight-mod') + 100)/100);
+    }
+    
+    // Calculate the price without rounding rules
+    var retailerFinalBeforeRounding = ($('.retailer-meta').data('price-mod') / 100) * retailerWithFreight;
+    var retailerFinal = 0;
+    var roundingRule = $('.retailer-meta').data('rounding-rule');
+    
+    switch(roundingRule) {
+        
+        case 'normal' : 
+            retailerFinal = retailerFinalBeforeRounding;
+            break;
+            
+        case 'round_cents' : 
+            retailerFinal = Math.ceil(retailerFinalBeforeRounding) - .01;
+            break;
+            
+        
+        case 'round_cents_elementary' :
+            retailerFinal = (100 * Math.floor((retailerFinalBeforeRounding + 50) / 100)) - .01;
+            break;
+            
+        
+        case 'round_cents_ceiling' :
+            retailerFinal = (100 * Math.ceil(retailerFinalBeforeRounding / 100)) - .01;
+            break;
+            
+            
+        default :
+            retailerFinal = retailerFinalBeforeRounding;
+            break;
+    }
+
+    serverData['amount'] = retailerFinal.toFixed(2);
+    
+    $price.html(serverData.amount);
+}
+
+function stepControls() {
+    optionSelectControls();
+    stepMovementControls();
+    stepPricingControls();
+    optionNotificationControls();
+    setRenderControls();
+}
+
+function configureReview() {
+    
+    $review = $('.review-table');    
+    
+    /*
+    
+    // Varibles used in testing
+    wood = serverData['choose-a-wood-type'].selected[0];
+    woodCost = serverData['choose-a-server-style'].pricing.cherry - serverData['choose-a-server-style'].pricing.oak;
+
+    oakCost = serverData['choose-a-server-style'].pricing.oak * ($('.retailer-meta').data('price-mod') / 100).toFixed(2);
+    
+
+    $('.dp-table-style').html(serverData['choose-a-trestle-table'].selected[1]);
+    if(wood == 'oak' || wood == 'maple') {
+        $('.dp-table-style-cost').html('$' + oakCost);
+    } else {
+        $('.dp-table-style-cost').html('$' + serverData['choose-a-trestle-table'].pricing.cherry * ($('.retailer-meta').data('price-mod') / 100).toFixed(2));
+    }    
+    $('.dp-table-style-edit')
+        .html('<a href="#" class="edit" data-edit-step="choose-a-trestle-table">Edit</a>');
+        
+        // Model
+    $('.model').html(serverData['choose-a-trestle-table'].model);
+    
+    // Wood Type
+    $('.dp-wood-type').html(serverData['choose-a-wood-type'].selected[1]);
+    if(wood == 'cherry' || wood == 'quarter-sawn-white-oak') {
+        $('.dp-wood-type-cost').html('$' + woodCost * ($('.retailer-meta').data('price-mod') / 100).toFixed(2));
+    }
+    $('.dp-wood-type-edit')
+        .html('<a href="#" class="edit" data-edit-step="choose-a-wood-type">Edit</a>');
+
+    // Edge Profile
+    if("choose-an-edge-profile" in serverData) {
+        $('.dp-edge-profile').html(serverData['choose-an-edge-profile'].selected[1]);
+        $('.dp-edge-profile-edit')
+            .html('<a href="#" class="edit" data-edit-step="choose-an-edge-profile">Edit</a>');
+    } else {
+        $('.dp-edge-profile').html('Natural');
+        $('.dp-edge-profile-edit')
+            .html('<a href="#" class="edit" data-edit-step="choose-an-edge-profile">Edit</a>');
+    }
+
+    // Dimensions
+    $('.dp-dimensions').html(serverData.dimensions.width + '" wide, ' + serverData.dimensions.tlength + '" long');
+    if(serverData.dimensions.sizePrice > 0) {
+        $('.dp-dimensions-cost').html('$' + serverData.dimensions.sizePrice * ($('.retailer-meta').data('price-mod') / 100).toFixed(2));
+    }
+    $('.dp-dimensions-edit')
+        .html('<a href="#" class="edit" data-edit-step="set-your-trestle-table-size">Edit</a>');    
+    
+    for(step in serverData) {
+        
+        if( step != 'dimensions' && 
+            step != 'imageParts' && 
+            step != 'selectedReference' &&
+            step != 'skips' &&
+            step != 'amount' &&
+            step != 'furnitureType') {
+            
+            var stepName    = serverData[step].name;
+            var optionName  = $('[data-step-id="'+step+'"]').find('.selected .title').html();
+            var stepID      = step;
+           
+            if("type" in serverData[step]) {
+                
+                // Base Color
+                if(serverData[step].type == 'bottom-color') {                  
+                    $('.dp-base-color').html(serverData[step].selected[1]);
+                    $('.dp-base-color-edit').html('<a href="#" class="edit" data-edit-step="' + step + '">Edit</a>');
+                    
+                    if('pricing' in serverData[step]) {
+                        if('type' in serverData[step].pricing) {
+                            if(serverData[step].pricing.type == 'flat') {
+                                $('.dp-base-color-cost')
+                                    .html("$" + 
+                                         (serverData[step].pricing.flat * 
+                                         ($('.retailer-meta').data('price-mod') / 100)).toFixed(2));   
+                            } else if (serverData[step].pricing.type == 'percentage') {
+                                $('.dp-base-color-cost').html(serverData[step].pricing.percent + "%");  
+                            }
+                        }
+                    }
+                }
+                
+                // Top Color
+                if(serverData[step].type == 'top-color') {
+                    $('.dp-top-color').html(serverData[step].selected[1]);
+                    $('.dp-top-color-edit').html('<a href="#" class="edit" data-edit-step="' + step + '">Edit</a>');
+                    if('pricing' in serverData[step]) {
+                        if('type' in serverData[step].pricing) {
+                            if(serverData[step].pricing.type == 'flat') {
+                                $('.dp-top-color-cost')
+                                    .html("$" + 
+                                         (serverData[step].pricing.flat * 
+                                         ($('.retailer-meta').data('price-mod') / 100)).toFixed(2));   
+                            } else if (serverData[step].pricing.type == 'percentage') {
+                                $('.dp-top-color-cost').html(serverData[step].pricing.percent + "%");  
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(step == 'distressing-level') {
+                $('.dp-distressing').html(serverData[step].selected[1]);
+                $('.dp-distressing-edit').html('<a href="#" class="edit" data-edit-step="' + step + '">Edit</a>');
+                if('pricing' in serverData[step]) {
+                    if('type' in serverData[step].pricing) {
+                        if(serverData[step].pricing.type == 'percentage') {
+                            $('.dp-distressing-cost').html(serverData[step].pricing.percent + '%');
+                        }
+                    }
+                }
+            }
+            if(step == 'rub-through') {
+                $('.dp-rub').html(serverData[step].selected[1]);
+                $('.dp-rub-edit').html('<a href="#" class="edit" data-edit-step="' + step + '">Edit</a>');
+                if('pricing' in serverData[step]) {
+                    if('type' in serverData[step].pricing) {
+                        if(serverData[step].pricing.type == 'percentage') {
+                            $('.dp-rub-cost').html(serverData[step].pricing.percent + '%');
+                        }
+                    }
+                }
+            }
+        } 
+    }
+    */
+    editButtonController();
+}
+
+function loadCompletedServer() {
+    
+    getBuilds();
+    
+    serverData = collection[$('#server').data('edit')];
+    
+    for(step in serverData) {
+        if( step != 'dimensions' && 
+            step != 'imageParts' && 
+            step != 'selectedReference' &&
+            step != 'skips' &&
+            step != 'amount' &&
+            step != 'furnitureType') {
+                
+            $('[data-step-id="' + step + '"]')
+                .find('.selected')
+                .removeClass('selected');
+             $('[data-step-id="' + step + '"]')   
+                .find('[data-option-id="' + serverData[step].selected[0] + '"]')
+                .addClass('selected');
+        }
+    }
+    
+    $('#server').data('edit','');
+}
+
+function stepMovementControls() {
+    
+    $('.step-footer a.back').click(function(e) {
+        
+        var $button      = $(this);
+        var $steps       = $('.step');
+        var $activeStep  = $('.step.active');
+        
+        e.preventDefault();
+        
+        if($activeStep.index() == 0) {
+            window.location.href = $button.attr('href');
+        } else {
+            
+            $activeStep.removeClass('active');
+            var halt = false;
+            
+            for(var n = 0; n < $('.step').length; n++) {
+                if(moveBack(n, $steps, $activeStep) && !halt) {
+                    var previous = $steps.get($activeStep.index() - (n + 1));
+                    $(previous).addClass('active');
+                    setRenderControls();
+                    halt = true;
+                    break;
+                }
+                    
+            }
+        }
+        
+    });
+    
+    $('.step-footer a.next').click(function(e) {
+        var $button      = $(this);
+        var $steps       = $('.step');
+        var $activeStep  = $('.step.active');
+        var totalSteps   = $('.step').length;
+        
+        e.preventDefault();
+        
+        if($activeStep.index() == totalSteps-1) {
+
+            writeToLocalStorage();
+            window.location.href = $button.attr('href');
+            
+        } else {
+            $activeStep.removeClass('active');
+            
+            var halt = false;
+            for(var n = 0; n < $('.step').length; n++) {
+                if(moveForward(n, $steps, $activeStep) && !halt) {
+                    var next = $steps.get($activeStep.index() + (n + 1));
+                    console.log($activeStep.index() + (n + 1));
+                    $(next).addClass('active');
+                    setRenderControls();                    
+                    halt = true;
+                    break;
+                }    
+            }
+        }
+    });
+}
+
+function moveBack(amount, steps, step) { 
+    var previous    = steps.get(step.index() - (amount+1));    
+    var stepId      = $(previous).data('step-id');    
+    if (serverData['choose-a-server-style'].pricing.drawers > 0) {
+        var drawers = true;
+    } else {
+        var drawers = false;
+    }
+
+    if(!drawers) {
+        if(stepId == 'choose-your-drawer-type') {
+            return false;
+        } else {
+            if(serverData.skips.indexOf(stepId) < 0) {
+                return true;
+            } else {
+                return false;
+            }  
+        }
+    } else {
+        if(serverData.skips.indexOf(stepId) < 0) {
+            return true;
+        } else {
+            return false;
+        }  
+    }
+    
+}
+
+function moveForward(amount, steps, step) {
+    var next = steps.get(step.index() + amount+1);  
+    var stepId = $(next).data('step-id');
+
+    if (serverData['choose-a-server-style'].pricing.drawers > 0) {
+        var drawers = true;
+    } else {
+        var drawers = false;
+    }
+
+    if(!drawers) {
+        if(stepId == 'choose-your-drawer-type') {
+            return false;
+        } else {
+            if(serverData.skips.indexOf(stepId) < 0) {
+                return true;
+            } else {
+                return false;
+            }  
+        }
+    } else {
+        if(serverData.skips.indexOf(stepId) < 0) {
+            return true;
+        } else {
+            return false;
+        }  
+    }
+}
+
+function writeToLocalStorage() {  
+    if(localStorage.getItem('builds')) {
+        builds = JSON.parse(localStorage.getItem('builds'));
+        if($('.furniture-container').attr('data-edit') === '') {
+            builds.push(serverData);
+        } else {
+            builds[$('.furniture-container').attr('data-edit')] = serverData;
+        }
+        localStorage.setItem('builds', JSON.stringify(builds));
+    } else {
+        var builds = [serverData];
+        localStorage.setItem('builds', JSON.stringify(builds));
+    }  
+}
+
+function getBuilds() {
+    collection = JSON.parse(localStorage.getItem('builds'));
+}
+
+function arrayUnique(array) {
+    var a = array.concat();
+    for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+    return a;
+};
+
+function optionNotificationControls() {
+    $('.options .box').click(function(e) {
+        e.preventDefault();
+        
+        if($(this).find('.notification-icon').length > 0) {
+            $(this).find('[data-remodal-id]').remodal().open();
+        }
+        
+    });
+}
+
+function optionSelectControls() {
+    $('img').on('dragstart', function(event) { event.preventDefault(); });
+    $('.options .box').click(function(e) {
+        e.preventDefault();
+        $box = $(this);
+        
+        if(!$box.hasClass('selected')) {
+            $box.parents('.options').find('.selected').removeClass('selected');
+            $box.addClass('selected');
+        } 
+ 
+        if(serverData.skips) {
+            delete serverData.skips;
+        }
+        
+        setServerObject();
+        monitorImage();
+        setServerPricing();
+        configureReview();
+    });
+}
+
+function stepPricingControls() {
+    $('.step[data-display-price="1"]').find('.price').show();
+}
+
+function monitorImage() { 
+    $('.render .render-image').hide();
+    $('.pgloading').show();
+    imagesLoaded('.render' , function( instance ) {
+        $('.pgloading').stop().fadeOut('fast',function() {
+            $('.render .render-image').fadeIn('fast');
+        });
+    });
+}
+
+function setRenderControls() {
+    if($('.step.active').attr('data-display-render') == '1') {
+        $('.render').show();
+    } else {
+        $('.render').hide();
+    }
+}
+
+function createServerChain(tabletop, tablebase, topColor, bottomColor) {
+
+    /*
+
+	// Configure our default URLs if nothing has been chosen yet
+	if(topColor == '') {
+		topColor = 'training/wood2.jpg';
+	}
+	
+	if(bottomColor == '') {
+		bottomColor = 'training/wood2.jpg';
+	}	
+	
+	// Set the start of our string to the hosting location
+	var baseURL = 'http://conradgrebel.ma.liquifire.com/conradgrebel?';
+	var output = '';
+    
+	// Configure our top/base PNG urls
+	output += 'source=name[top],url[file:' + tabletop.image +']&';
+	output += 'source=name[base],url[file:' + tablebase.image + ']&';
+	
+	// Configure our top/base color JPEG urls
+	output += 'source=url[file:' + topColor + '],name[textureOne]&';
+	output += 'source=url[file:' + bottomColor + '],name[textureTwo]&';
+	
+	// Setup and texture our canvas for the top of the table
+	output += 'blank=width[top.width],height[top.height],name[bg]&';
+	output += 'tile=image[textureOne]&';
+	output += 'select=image[top]&';
+	
+	// Iterate over the top masks for applying the texture
+
+	for(i = 0; i < tabletop.masks.length; i++ ) {
+		output += 'drape=texture[bg],grid[file:' + tabletop.masks[i] + ']&';
+	}
+
+	
+	// Setup and texture our canvas for the bottom of the table
+	output += 'blank=width[base.width],height[base.height],name[basebg]&'
+	output += 'tile=image[textureTwo]&';
+	output += 'select=image[base]&';
+	
+	
+	// Iterate over the bottom  masks for applying the texture
+
+	for(i = 0; i < tablebase.masks.length; i++ ) {
+		output += 'drape=texture[basebg],grid[file:' + tablebase.masks[i] + ']&';
+	}
+
+	
+	// Combine the top and base canvas
+	output += 'composite=compose[over],image[top],x[0],y[0]&';
+	
+	// Output image settings
+	output += 'trim&';
+	output += 'scale=size[1080x460]&';
+	output += 'sink=format[png]';
+
+	// Encode the string as a usable URL
+	var uri = encodeURI(output);
+	var uri = baseURL + uri;
+	return uri;
+	
+    */
+    
+}
+
+})( jQuery )

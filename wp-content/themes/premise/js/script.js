@@ -3,7 +3,10 @@
         menuDropdown();
         populateMatcher();
         allowThrough();
+        alert(window.height());
+        alert(window.width());
     });
+    
 
     function menuDropdown() {
         $('.menu').click(function() {

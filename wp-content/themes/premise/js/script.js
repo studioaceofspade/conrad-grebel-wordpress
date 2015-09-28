@@ -3,8 +3,8 @@
         menuDropdown();
         populateMatcher();
         allowThrough();
-	
     });
+    
 
     function menuDropdown() {
         $('.menu').click(function() {

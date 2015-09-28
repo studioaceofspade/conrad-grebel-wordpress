@@ -1,4 +1,7 @@
 <div class="col-md-6 armless-quantity">
+    <div class="single-side-price single-chair-price">
+        <span></span>
+    </div>
     <img class="render-image no-arms-render" src="">
     <div 
         class="box-measurement" 

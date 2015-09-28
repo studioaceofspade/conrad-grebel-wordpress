@@ -1,5 +1,7 @@
 <div class="col-md-6 arm-quantity">
-
+    <div class="single-arm-price single-chair-price">
+        <span></span>
+    </div>
     <img class="render-image arms-render" src="">
     <div 
         class="box-measurement" 

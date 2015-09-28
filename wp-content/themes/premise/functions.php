@@ -44,14 +44,10 @@ function saos_load_scripts() {
     
 	wp_register_script('saos', get_template_directory_uri().'/js/script.js', array('jquery'));
 	wp_register_script('saos_plugins', get_template_directory_uri().'/js/plugins.js', array('jquery'));
-
 	wp_enqueue_script('jquery');
 	wp_enqueue_script('bootstrap');
 	wp_enqueue_script('saos');
 	wp_enqueue_script('saos_plugins');
-    
-
-
 	if ( is_singular() ) { wp_enqueue_script( 'comment-reply' ); }
 }
 add_action( 'wp_enqueue_scripts', 'saos_load_scripts' );

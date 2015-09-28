@@ -1,4 +1,4 @@
-/*!
+/a*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -1735,7 +1735,7 @@ pre code {
     margin-left: 0%;
   }
 }
-@media (min-width: 992px) {
+@media (min-width:720px) {
   .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
     float: left;
   }

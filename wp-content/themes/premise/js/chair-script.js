@@ -251,6 +251,11 @@ function setChairPricing() {
     chairData.armAmount     = amountArm.toFixed(2);
     chairData.sideAmount    = amountSide.toFixed(2);
     
+    if($('.single-side-price span').html() == '') {
+        $('.single-side-price').html('$' + chairData.sideAmount);
+        $('.single-arm-price').html('$' + chairData.armAmount);
+    }
+    
     $price.html(chairData.amount);  
     
 }

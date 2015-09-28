@@ -1559,3 +1559,7 @@ Section : Print Styles
     line-height: 30px;
     color: #fff;
     font-size: 16px;}
+@media screen and (max-width: 720px) {
+	html {
+		zoom: .65;}
+}

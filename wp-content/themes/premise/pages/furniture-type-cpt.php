@@ -5,7 +5,9 @@ if (CFCT_DEBUG) { cfct_banner(__FILE__); }
 global $post;
 $typeID = $post->post_name;
 
-$edit = $_GET['edit-collection'];  
+if(array_key_exists('edit-collection', $_GET)) :
+    $edit = $_GET['edit-collection'];  
+endif;
 
 get_header(); ?>
 

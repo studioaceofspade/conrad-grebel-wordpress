@@ -3,6 +3,7 @@
         menuDropdown();
         populateMatcher();
         allowThrough();
+	
     });
 
     function menuDropdown() {

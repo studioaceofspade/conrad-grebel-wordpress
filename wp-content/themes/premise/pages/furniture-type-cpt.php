@@ -326,7 +326,7 @@ get_header(); ?>
                                 <tr>
                                     <th>Option name</th>
                                     <th>Your Choice</th>
-                                    <th>Cost of Addon</th>
+                                    <th>&nbsp;</th>
                                     <th>&nbsp;</th>
                                 </tr>
                             </thead>
@@ -340,19 +340,19 @@ get_header(); ?>
                                 <tr>
                                     <td>Chair Style</td>
                                     <td class="chair-style"></td>
-                                    <td class="chair-style-cost"></td>
+                                    <td class="chair-style-cost"><span></span> in total</td>
                                     <td class="chair-style-edit"></td>
                                 </tr>
                                 <tr class="arm-row">
                                     <td>Arm Chairs, Model <span class="chair-model"></span>AC</td>
                                     <td class="chair-arm-quantity"></td>
-                                    <td class="chair-arm-cost"></td>
+                                    <td class="chair-arms-cost"><span></span> each</td>
                                     <td class="chair-arm-edit"></td>
                                 </tr>
                                 <tr>
                                     <td>Side Chairs, Model <span class="chair-model"></span>SC</td>
                                     <td class="chair-no-arm-quantity"></td>
-                                    <td>&nbsp</td>
+                                    <td class="chair-side-cost"><span></span> each</td>
                                     <td class="chair-no-arm-edit"></td>
                                 </tr>
                                 <tr>
@@ -364,31 +364,31 @@ get_header(); ?>
                                 <tr>
                                     <td>Chair Wood Type</td>
                                     <td class="chair-wood-type"></td>
-                                    <td class="chair-wood-type-cost"></td>
+                                    <td>&nbsp;</td>
                                     <td class="chair-wood-type-edit"></td>
                                 </tr>
                                 <tr>
                                     <td>Chair Base Color</td>
                                     <td class="chair-base-color"></td>
-                                    <td class="chair-base-color-cost">&nbsp;</td>
+                                    <td>&nbsp;</td>
                                     <td class="chair-base-color-edit"></td>
                                 </tr>
                                 <tr>
                                     <td>Chair Seat Color/Fabric/Leather</td>
                                     <td class="chair-seat-color"></td>
-                                    <td class="chair-seat-color-cost">&nbsp;</td>
+                                    <td>&nbsp;</td>
                                     <td class="chair-seat-color-edit"></td>
                                 </tr>
                                 <tr>
                                     <td>Chair Distressing</td>
                                     <td class="chair-distressing"></td>
-                                    <td class="chair-distressing-cost">&nbsp;</td>
+                                    <td>&nbsp;</td>
                                     <td class="chair-distressing-edit"></td>
                                 </tr>
                                 <tr>
                                     <td>Chair Rub Through</td>
                                     <td class="chair-rub"></td>
-                                    <td class="chair-rub-cost">&nbsp;</td>
+                                    <td>&nbsp;</td>
                                     <td class="chair-rub-edit"></td>
                                 </tr>
                             </tbody>

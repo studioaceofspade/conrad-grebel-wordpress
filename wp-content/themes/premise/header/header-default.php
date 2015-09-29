@@ -149,7 +149,7 @@ E-Mail: jon@studioaceofspade.com
                 <a class="collections" href="<?php bloginfo('url'); ?>/collections/">
                     <i class="fa fa-th-large"></i><span>view your collections</span>
                 </a>
-            </div>
+            </header>
         </div>
     </div>
-</header>
+</div>

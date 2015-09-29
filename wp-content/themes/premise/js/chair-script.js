@@ -486,15 +486,19 @@ function setChairObject() {
             var changingChair = false;
         }
         
+        console.log(changingChair);
+        console.log(hasWood);
+        
         // check to see if we need to change selected seat
         if(changingChair && !hasWood) {
             $('[data-option-id="wooden-seat"]').removeClass('selected').parent('.col-md-4').hide();
             $('[data-option-id="fabric-seat"]').addClass('selected');
-        } else {
+        } else if (changingChair) {
             $('[data-option-id="fabric-seat"]').removeClass('selected');
             $('[data-option-id="leather-seat"]').removeClass('selected');
             $('[data-option-id="wooden-seat"]').addClass('selected').parent('.col-md-4').show();
         }
+
         
         $('.step').each(function(index) {
             

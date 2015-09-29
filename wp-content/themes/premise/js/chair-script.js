@@ -372,7 +372,7 @@ function configureReview() {
             if(step == 'choose-chair-style') {
                 $review.find('.chair-style').html(chairData[step].selected[1]);
                 $review.find('.chair-style-edit').html('<a href="#" class="edit" data-edit-step="' + step + '">Edit</a>');
-                $review.find('.chair-style-cost').html('$' + (chairData[step].pricing.oak * ($('.retailer-meta').data('price-mod') / 100)).toFixed(2));
+                $review.find('.chair-style-cost span').html('$' + (chairData.amount));
                 $('.chair-model').html(chairData[step].model);
 
             }
@@ -400,6 +400,9 @@ function configureReview() {
             }
         } 
     }
+    $review.find('.chair-side-cost span').html($('.single-side-price').html());
+    console.log(chairData.armAmount);
+    $review.find('.chair-arms-cost span').html($('.single-arm-price').html());
     editButtonController();
 }
 
@@ -433,9 +436,19 @@ function optionSelectControls() {
             delete chairData.skips;
         }
         
+        $('[data-option-id="chairs-without-arms"]').find('.count').html('1');
+        $('[data-option-id="chairs-with-arms"]').find('.count').html('0');
+        
         setChairObject();
+
         monitorImage();
         setChairPricing();
+        
+        if($box.parents('.step').data('step-id') == 'choose-chair-style') {
+            $('.single-side-price').html('$' + chairData.sideAmount);
+            $('.single-arm-price').html('$' + chairData.armAmount);
+        }
+        
         configureReview();
 
     });
@@ -460,13 +473,28 @@ function setChairObject() {
     if($('#chair').data('edit') === '') {
                
         $chair = $('[data-step-id="choose-chair-style"]').find('.selected').siblings('.option-settings');
+        
+        if($chair.find('.wooden-seat-render').length == 0) {
+            var hasWood = false;
+        } else {
+            var hasWood = true;
+        }
+        
+        if($('.step.active').data('step-id') == 'choose-chair-style') {
+            var changingChair = true;
+        } else {
+            var changingChair = false;
+        }
+        
         // check to see if we need to change selected seat
-        if($chair.find('.wooden-seat-render').length == 0 && $('[data-option-id="wooden-seat"]').hasClass('selected')) {
-            if($('[data-option-id="wooden-seat"]').parent('.col-md-4').css('display') != 'none') {
-                $('[data-option-id="wooden-seat"]').removeClass('selected').parent('.col-md-4').hide();
-                $('[data-option-id="fabric-seat"]').addClass('selected');
-            }
-        }       
+        if(changingChair && !hasWood) {
+            $('[data-option-id="wooden-seat"]').removeClass('selected').parent('.col-md-4').hide();
+            $('[data-option-id="fabric-seat"]').addClass('selected');
+        } else {
+            $('[data-option-id="fabric-seat"]').removeClass('selected');
+            $('[data-option-id="leather-seat"]').removeClass('selected');
+            $('[data-option-id="wooden-seat"]').addClass('selected').parent('.col-md-4').show();
+        }
         
         $('.step').each(function(index) {
             

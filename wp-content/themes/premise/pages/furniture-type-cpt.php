@@ -330,8 +330,6 @@ get_header(); ?>
             </div>
         <?php else : ?>
             <?php if($post->post_name == 'chair-review'): ?>
-            
-            <!-- Review Setup -->
             <div class="row review">
                 <div class="col-md-12">
                     <div class="review-wrapper">
@@ -413,8 +411,6 @@ get_header(); ?>
             </div>
             
             <?php elseif($post->post_name == 'double-pedestal-review'): ?>
-            
-            <!-- Review Setup -->
             <div class="row review">
                 <div class="col-md-12">
                     <div class="review-wrapper">
@@ -674,6 +670,102 @@ get_header(); ?>
                                     <td class="dp-rub"></td>
                                     <td class="dp-rub-cost">&nbsp;</td>
                                     <td class="dp-rub-edit"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <?php elseif($post->post_name == 'server-review') : ?>
+            <div class="row review">
+                <div class="col-md-12">
+                    <div class="review-wrapper">
+                        <h2>Review Your Choices</h2>
+                        <table class="review-table">
+                            <thead>
+                                <tr>
+                                    <th>Option name</th>
+                                    <th>Your Choice</th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Furniture Type</td>
+                                    <td>Server</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <tr>
+                                    <td>Server Style</td>
+                                    <td class="server-style"></td>
+                                    <td class="server-style-cost"></td>
+                                    <td class="server-style-edit"></td>
+                                </tr>
+                                
+                                <tr class="simple-server">
+                                    <td>Model Number</td>
+                                    <td class="server-model"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                
+                                <tr class="complex-server">
+                                    <td>Model Number</td>
+                                    <td class="server-model">Server: <span class="model"></span>B, Hutch: <span class="model"></span>U</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Wood Type</td>
+                                    <td class="server-wood-type"></td>
+                                    <td class="server-wood-type-cost">&nbsp;</td>
+                                    <td class="server-wood-type-edit"></td>
+                                </tr>
+                                <tr>
+                                    <td>Hardware</td>
+                                    <td class="server-hardware"></td>
+                                    <td class="server-hardware-cost">&nbsp;</td>
+                                    <td class="server-hardware-edit"></td>
+                                </tr>
+                                <tr class="glass-server">
+                                    <td>Glass Type</td>
+                                    <td class="server-glass"></td>
+                                    <td class="server-glass-cost">&nbsp;</td>
+                                    <td class="server-glass-edit"></td>
+                                </tr>
+                                <tr class="drawer-server">
+                                    <td>Drawer Type</td>
+                                    <td class="server-drawer"></td>
+                                    <td class="server-drawer-cost">&nbsp;</td>
+                                    <td class="server-drawer-edit"></td>
+                                </tr>
+                                <tr>
+                                    <td>Base Color</td>
+                                    <td class="server-base-color"></td>
+                                    <td class="server-base-color-cost"></td>
+                                    <td class="server-base-color-edit"></td>
+                                </tr>
+                                <tr>
+                                    <td>Door &amp; Drawer Color</td>
+                                    <td class="server-top-color"></td>
+                                    <td class="server-top-color-cost">&nbsp;</td>
+                                    <td class="server-top-color-edit"></td>
+                                </tr>
+                                <tr>
+                                    <td>Distressing</td>
+                                    <td class="server-distressing"></td>
+                                    <td class="server-distressing-cost"></td>
+                                    <td class="server-distressing-edit"></td>
+                                </tr>
+                                <tr>
+                                    <td>Rub Through</td>
+                                    <td class="server-rub"></td>
+                                    <td class="server-rub-cost">&nbsp;</td>
+                                    <td class="server-rub-edit"></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -197,7 +197,7 @@
                 $related_object = array_pop(get_sub_field('related_option'));
                 $related_option = $related_object->post_name; ?>
         <div 
-            class="hardware-render"
+            class="hutch-hardware-render"
             data-related-option="<?php echo $related_option; ?>"
             data-render-image="<?php echo $render_image; ?>"
             data-render-masks="<?php echo $render_masks; ?>">

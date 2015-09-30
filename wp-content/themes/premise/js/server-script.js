@@ -2,7 +2,7 @@ var serverData = {};
 var collection = {};
 
 (function($) { 
-    alert($(window).width());
+
 	$(document).ready(function() {
         stepControls();
         setHardwareDefault();
@@ -218,7 +218,6 @@ function setServerObject() {
     // Grab our door and drawer information
     doorDrawerRender = $selectedServer.find('.door-drawer-render').data('render-image');
     doorDrawerMasks  = $selectedServer.find('.door-drawer-render').data('render-masks').split(',');
-    console.log(doorDrawerMasks);
     doorDrawerColor  = serverData.imageParts['bottom-color'];
     
     // Grab our hardware information
@@ -230,25 +229,62 @@ function setServerObject() {
         hardwareColor = $selectedHardware.find('.hardware-color').data('color');
     }
     
+    // Grab our hinge information
+    var hasHinge = true;
+    if($selectedServer.find('.hinge-render').length > 0) {
+        hingeRender = $selectedServer.find('.hinge-render').data('render-image');
+        hingeMasks  = $selectedServer.find('.hinge-render').data('render-masks').split(',');
+        hingeColor  = $selectedServer.find('.hinge-render').data('render-texture');
+    } else {
+        hasHinge = false;
+    }
+    
+    // Grab our glass information
+    var hasGlass = true;
+    if($selectedServer.find('.glass-render').length > 0) {
+        glassRender = $selectedServer.find('.glass-render').data('render-image');
+    } else {
+        hasGlass = false;
+    }
+    
     // Grab our hutch information
     if(serverData.skips.indexOf('do-you-want-a-hutch') < 0) {
         hutchRender = $selectedServer.find('.hutch-base-render').data('render-image');
-        hutchMasks  = $selectedServer.find('.hutch-base-render').data('render-masks');
+        hutchMasks  = $selectedServer.find('.hutch-base-render').data('render-masks').split(',');
         hutchColor  = baseColor;
     }
     
     // Grab our hutch door and drawer information
     if(serverData.skips.indexOf('do-you-want-a-hutch') < 0) {
         hutchDoorDrawerRender = $selectedServer.find('.hutch-doordrawer-render').data('render-image');
-        hutchDoorDrawerMasks  = $selectedServer.find('.hutch-doordrawer-render').data('render-masks');
+        hutchDoorDrawerMasks  = $selectedServer.find('.hutch-doordrawer-render').data('render-masks').split(',');
         hutchDoorDrawerColor  = doorDrawerColor;
     }
     
     // Grab our hutch hardware information
     if(serverData.skips.indexOf('do-you-want-a-hutch')  < 0) {
         hutchHardwareRender = $selectedServer.find('.hutch-hardware-render[data-related-option="' + hardware + '"]').data('render-image');
-        hutchHardwareMasks  = $selectedServer.find('.hutch-hardware-render[data-related-option="' + hardware + '"]').data('render-masks');
+        hutchHardwareMasks  = $selectedServer.find('.hutch-hardware-render[data-related-option="' + hardware + '"]').data('render-masks').split(',');
     }
+    
+    // Grab our hutch hinge information
+    var hasHutchHinge = true;
+    if($selectedServer.find('.hutch-hinge-render').length > 0) {
+        hutchHingeRender = $selectedServer.find('.hutch-hinge-render').data('render-image');
+        hutchHingeMasks  = $selectedServer.find('.hutch-hinge-render').data('render-masks').split(',');
+        hutchHingeColor  = $selectedServer.find('.hutch-hinge-render').data('render-texture');
+    } else {
+        hasHinge = false;
+    }
+    
+    // Grab our glass information
+    var hasHutchGlass = true;
+    if($selectedServer.find('.hutch-glass-render').length > 0) {
+        hutchGlassRender = $selectedServer.find('.hutch-glass-render').data('render-image');
+    } else {
+        hasHutchGlass = false;
+    }
+    
     
     // Setup our objects/vars to pass to the chain function
     serverBase = {
@@ -265,41 +301,83 @@ function setServerObject() {
         'image' : hardwareRender,
         'masks' : hardwareMasks,
         'color' : hardwareColor
-    };    
-    if(serverData.skips.indexOf('do-you-want-a-hutch') > 0) {
-        hutch = false;
+    };
+    if(hasHinge) {
+        hinge = {
+            'image' : hingeRender,
+            'masks' : hingeMasks,
+            'color' : hingeColor
+        };   
     } else {
-        hutch = {
-            'image' : hutchRender,
-            'masks' : hutchMasks,
-            'color' : hutchColor  
-        };
+        hinge = false;
     }
-    if(serverData.skips.indexOf('do-you-want-a-hutch') > 0) {
-        hutchDoorDrawer = false;
+    if(hasGlass) {
+        glass = {
+            'image' : glassRender,
+        };  
     } else {
-        hutchDoorDrawer = {
-            'image' : hutchDoorDrawerRender,
-            'masks' : hutchDoorDrawerMasks,
-            'color' : hutchDoorDrawerColor  
-        };        
+        glass = false;
     }
-    if(serverData.skips.indexOf('do-you-want-a-hutch') > 0) {
-        hutchHardware = false;
+    
+    // If we have a hutch and it is selected
+    var hasHutch = true;
+    if(serverData.skips.indexOf('do-you-want-a-hutch') <= 0) {
+        console.log('hutch is not in skips');
+        if(serverData['do-you-want-a-hutch'].selected[0] === 'hutch') {
+            hutch = {
+                'image' : hutchRender,
+                'masks' : hutchMasks,
+                'color' : hutchColor  
+            };
+            
+            hutchDoorDrawer = {
+                'image' : hutchDoorDrawerRender,
+                'masks' : hutchDoorDrawerMasks,
+                'color' : hutchDoorDrawerColor  
+            };
+            
+            hutchHardware = {
+                'image' : hutchHardwareRender,
+                'masks' : hutchHardwareMasks,
+                'color' : hardwareColor  
+            };
+            
+            if(hasHutchHinge) {
+                hutchHinge = {
+                    'image' : hutchHingeRender,
+                    'masks' : hutchHingeMasks,
+                    'color' : hutchHingeColor
+                };   
+            } else {
+                hinge = false;
+            }
+            if(hasHutchGlass) {
+                hutchGlass = {
+                    'image' : hutchGlassRender,
+                };  
+            } else {
+                hutchGlass = false;
+            }
+        } else {
+            hasHutch = false;
+        }
     } else {
-        var hutchHardware = {
-            'image' : hutchHardwareRender,
-            'masks' : hutchHardwareMasks,
-            'color' : hardwareColor  
-        };
-        
+        hasHutch = false;
     }
     
     // Get our chain
-    chain = createServerChain(serverBase, doorDrawer, hardware, hutch, hutchDoorDrawer, hutchHardware);
+    var chain = '';
+    
+    console.log(hasHutchGlass);
+    
+    if(hasHutch) {
+        chain = createServerChain(hutch, hutchDoorDrawer, hutchHardware, hutchHinge, hutchGlass);
+    } else { 
+        chain = createServerChain(serverBase, doorDrawer, hardware, hinge, glass);
+    }
     
     // Store the chain on our object to pass to collections
-    serverData.imageParts['chain'] = chain;
+    serverData.imageParts.chain = chain;
     
     // Update the render on the current page
     $('.render .render-image').attr('src',chain);
@@ -809,7 +887,7 @@ function setRenderControls() {
     }
 }
 
-function createServerChain(serverBase, doorDrawer, hardware, hutch, hutchDoorDrawer, hutchHardware) {
+function createServerChain(serverBase, doorDrawer, hardware, hinge, glass) {
     // Log our data that we're passing along to double check it all
     //console.log('Server Base:');
     //console.log(serverBase);
@@ -818,64 +896,126 @@ function createServerChain(serverBase, doorDrawer, hardware, hutch, hutchDoorDra
     //console.log('Hardware:');
     //console.log(hardware);
     //console.log('Hutch Base:');
-    console.log(hutch);
+    console.log(serverBase);
     //console.log('Hutch Doors and Drawers:');
     //console.log(hutchDoorDrawer);
     //console.log('Hutch Hardware:');
     //console.log(hutchHardware);
     
-    console.log(doorDrawer.masks);
-    console.log(hardware.masks);
-    console.log(doorDrawer.masks.length);
-    
 	// Set the start of our string to the hosting location
 	var baseURL = 'http://conradgrebel.ma.liquifire.com/conradgrebel?';
 	var output = '';
+        
+    // Configure our image PNG urls
+    output += 'source=name[server],url[file:' + serverBase.image +']&';
+    output += 'source=name[doorDrawer],url[file:' + doorDrawer.image +']&';
+    output += 'source=name[hardware],url[file:' + hardware.image + ']&';
     
-    if(hutch != false) { // hutch and server chain
-        console.log("This has a hutch");
-    } else { // standard server chain
-        console.log("This does not have a hutch");
-        
-        // Configure our image PNG urls
-        output += 'source=name[server],url[file:' + serverBase.image +']&';
-        output += 'source=name[doorDrawer],url[file:' + doorDrawer.image +']&';
-        output += 'source=name[hardware],url[file:' + hardware.image + ']&';
-        
-        // Configure our color JPEG urls
-        output += 'source=url[file:' + serverBase.color + '],name[serverBaseTexture]&';
-        output += 'source=url[file:' + doorDrawer.color + '],name[doorDrawerTexture]&';
-        output += 'source=url[file:' + hardware.color + '],name[hardwareTexture]&';
-        
-        // Setup and texture our canvas for the base of the server
-        output += 'blank=width[server.width],height[server.height],name[serverbg]&'; // 1. background made in LP
-        output += 'tile=image[serverBaseTexture]&'; // 2. texture/color
-        output += 'select=image[server]&'; // 3. png image
-        
-        // Iterate over the server masks for applying the texture
-        for(i = 0; i < serverBase.masks.length; i++ ) {
-            output += 'drape=texture[serverbg],grid[file:' + serverBase.masks[i] + ']&';
-        }
-        
-        // Setup and texture our canvas for the doors and drawers of the server
-        output += 'blank=width[doorDrawer.width],height[doorDrawer.height],name[doorDrawerBg]&'; // 1. background made in LP
-        output += 'tile=image[doorDrawerTexture]&'; // 2. texture/color
-        output += 'select=image[doorDrawer]&'; // 3. png image
-        
-        // Iterate over the doors and drawers masks for applying the texture
-        for(i = 0; i < doorDrawer.masks.length; i++ ) {
-            output += 'drape=texture[doorDrawerBg],grid[file:' + doorDrawer.masks[i] + ']&';
-        }
-        
+    if(hinge) {
+        output += 'source=name[hinge],url[file:' + hinge.image + ']&';
+        output += 'source=name[hingeTexture],url[file:' + hinge.color + ']&';
+    }
+    
+    if(glass) {
+        output += 'source=name[glass],url[file:' + glass.image + ']&';
+    }
+    
+    // Configure our color JPEG urls
+    output += 'source=url[file:' + serverBase.color + '],name[serverBaseTexture]&';
+    output += 'source=url[file:' + doorDrawer.color + '],name[doorDrawerTexture]&';
+    output += 'source=url[file:' + hardware.color + '],name[hardwareTexture]&';
+    
+    // Setup and texture our canvas for the base of the server
+    output += 'blank=width[server.width],height[server.height],name[serverbg]&'; // 1. background made in LP
+    output += 'tile=image[serverBaseTexture]&'; // 2. texture/color
+    output += 'select=image[server]&'; // 3. png image
+    
+    // Iterate over the server masks for applying the texture
+    for(i = 0; i < serverBase.masks.length; i++ ) {
+        output += 'drape=texture[serverbg],grid[file:' + serverBase.masks[i] + ']&';
+    }
+    
+    // Setup and texture our canvas for the doors and drawers of the server
+    output += 'blank=width[doorDrawer.width],height[doorDrawer.height],name[doorDrawerBg]&'; // 1. background made in LP
+    output += 'tile=image[doorDrawerTexture]&'; // 2. texture/color
+    output += 'select=image[doorDrawer]&'; // 3. png image
+    
+    // Iterate over the doors and drawers masks for applying the texture
+    for(i = 0; i < doorDrawer.masks.length; i++ ) {
+        output += 'drape=texture[doorDrawerBg],grid[file:' + doorDrawer.masks[i] + ']&';
+    }
+    
+    // Setup and texture our canvas for the hardware of the server
+    output += 'blank=width[hardware.width],height[hardware.height],name[hardwareBg]&'; // 1. background made in LP
+    output += 'tile=image[hardwareTexture]&'; // 2. texture/color
+    output += 'select=image[hardware]&'; // 3. png image
+    
+    // Iterate over the hardware masks for applying the texture
+    for(i = 0; i < hardware.masks.length; i++ ) {
+        output += 'drape=texture[hardwareBg],grid[file:' + hardware.masks[i] + ']&';
+    }
+    
+    if(hinge) {
         // Setup and texture our canvas for the hardware of the server
-        output += 'blank=width[hardware.width],height[hardware.height],name[hardwareBg]&'; // 1. background made in LP
-        output += 'tile=image[hardwareTexture]&'; // 2. texture/color
-        output += 'select=image[hardware]&'; // 3. png image
+        output += 'blank=width[hinge.width],height[hinge.height],name[hingebg]&'; // 1. background made in LP
+        output += 'tile=image[hingeTexture]&'; // 2. texture/color
+        output += 'select=image[hinge]&'; // 3. png image
         
         // Iterate over the hardware masks for applying the texture
-        for(i = 0; i < hardware.masks.length; i++ ) {
-            output += 'drape=texture[hardwareBg],grid[file:' + hardware.masks[i] + ']&';
+        for(i = 0; i < hinge.masks.length; i++ ) {
+            output += 'drape=texture[hingebg],grid[file:' + hinge.masks[i] + ']&';
         }
+    }
+    
+    if(glass) {
+        // Setup and texture our canvas for the hardware of the server
+        output += 'blank=width[glass.width],height[glass.height],name[glassbg]&'; // 1. background made in LP
+    }
+    
+    if(hinge && glass) {
+        
+        console.log('hinge and glass');
+        
+        output += 'select=image[hinge]&';
+        output += 'composite=compose[over],image[glass],x[0],y[0]&';
+        
+        output += 'select=image[hardware]&';
+        output += 'composite=compose[over],image[hinge],x[0],y[0]&';
+        
+        output += 'select=image[doorDrawer]&';
+        output += 'composite=compose[over],image[hardware],x[0],y[0]&';
+        
+        output += 'select=image[server]&';
+        output += 'composite=compose[over],image[doorDrawer],x[0],y[0]&';
+        
+    } else if (hinge && !glass) {
+        
+        console.log('hinge');
+        
+        output += 'select=image[hardware]&';
+        output += 'composite=compose[over],image[hinge],x[0],y[0]&';
+        
+        output += 'select=image[doorDrawer]&';
+        output += 'composite=compose[over],image[hardware],x[0],y[0]&';
+        
+        output += 'select=image[server]&';
+        output += 'composite=compose[over],image[doorDrawer],x[0],y[0]&';
+        
+    } else if (glass && !hinge) {
+        
+        console.log('glass');
+        
+        output += 'select=image[hardware]&';
+        output += 'composite=compose[over],image[glass],x[0],y[0]&';
+        
+        output += 'select=image[doorDrawer]&';
+        output += 'composite=compose[over],image[hardware],x[0],y[0]&';
+        
+        output += 'select=image[server]&';
+        output += 'composite=compose[over],image[doorDrawer],x[0],y[0]&';
+    } else {
+        
+        console.log('no glass or hinge');
         
         // Combine the top and base canvas
         output += 'select=image[doorDrawer]&';
@@ -884,107 +1024,18 @@ function createServerChain(serverBase, doorDrawer, hardware, hutch, hutchDoorDra
         // Combine the top and base canvas
         output += 'select=image[server]&';
         output += 'composite=compose[over],image[doorDrawer],x[0],y[0]&';
-        
-        // Output image settings
-        output += 'trim&';
-        output += 'scale=size[1080x460]&';
-        output += 'sink=format[png]';
-    
-        // Encode the string as a usable URL
-        var uri = encodeURI(output);
-        var uri = baseURL + uri;        
     }
-    return uri;
-
-/*	
-
-
-
-# replace this with the pngs
-source=name[server],url[file:server/ashboro/ashboro_base]
-source=name[hardware],url[file:server/ashboro/ashboro_1920_handle_render.png]
-
-# replace this for the texture
-source=url[file:training/wood2.jpg],name[texture]
-source=url[file:server/_old/metal-texture-7.jpg],name[metal]
-
-######### Seat setup #################################################################
-
-blank=width[server.width],height[server.height],name[serverbg]
-tile=image[texture]
-
-select=image[server]
-
-# use these for your base grids
-drape=texture[serverbg],grid[file:server/ashboro/ashboro_base_1]
-drape=texture[serverbg],grid[file:server/ashboro/ashboro_base_2]
-drape=texture[serverbg],grid[file:server/ashboro/ashboro_base_3]
-
-######### Chair setup #################################################################
-
-# don't bother with these lines
-blank=width[hardware.width],height[hardware.height],name[hardwarebg]
-tile=image[metal]
-select=image[hardware]
-
-# use these for your top grids
-drape=texture[hardwarebg],grid[file:server/ashboro/ashboro_1920_handle_mask]
-
-select=image[server]
-composite=compose[over],image[hardware],x[0],y[0]
-# leave this alone, too
-trim
-scale=size[1080x460]
-sink=format[png]
-
     
-	// Configure our top/base PNG urls
-	output += 'source=name[top],url[file:' + doorsDrawers.image +']&';
-	output += 'source=name[base],url[file:' + serverBase.image + ']&';
-	
-	// Configure our top/base color JPEG urls
-	output += 'source=url[file:' + topColor + '],name[textureOne]&';
-	output += 'source=url[file:' + bottomColor + '],name[textureTwo]&';
-	
-	// Setup and texture our canvas for the top of the table
-	output += 'blank=width[top.width],height[top.height],name[bg]&';
-	output += 'tile=image[textureOne]&';
-	output += 'select=image[top]&';
-	
-	// Iterate over the top masks for applying the texture
+    // Output image settings
+    output += 'trim&';
+    output += 'scale=size[1080x460]&';
+    output += 'sink=format[png]';
 
-	for(i = 0; i < tabletop.masks.length; i++ ) {
-		output += 'drape=texture[bg],grid[file:' + tabletop.masks[i] + ']&';
-	}
+    // Encode the string as a usable URL
+    var uri = encodeURI(output);
+    var uri = baseURL + uri;        
 
-	
-	// Setup and texture our canvas for the bottom of the table
-	output += 'blank=width[base.width],height[base.height],name[basebg]&'
-	output += 'tile=image[textureTwo]&';
-	output += 'select=image[base]&';
-	
-	
-	// Iterate over the bottom  masks for applying the texture
-
-	for(i = 0; i < tablebase.masks.length; i++ ) {
-		output += 'drape=texture[basebg],grid[file:' + tablebase.masks[i] + ']&';
-	}
-
-	
-	// Combine the top and base canvas
-	output += 'composite=compose[over],image[top],x[0],y[0]&';
-	
-	// Output image settings
-	output += 'trim&';
-	output += 'scale=size[1080x460]&';
-	output += 'sink=format[png]';
-
-	// Encode the string as a usable URL
-	var uri = encodeURI(output);
-	var uri = baseURL + uri;
-	return uri;
-	
-    */
+    return uri;
     
 }
 

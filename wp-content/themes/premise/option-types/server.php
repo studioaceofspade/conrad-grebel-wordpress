@@ -72,7 +72,7 @@
         </div>
         <?php endif; ?>
         
-        <!-- SECTION: Render data ===================================== 
+        <!-- SECTION: Server Render data ===============================
              =========================================================== -->
         <?php
         if(get_field('doordrawer_render')) :         
@@ -144,7 +144,45 @@
             <?php endwhile; ?>
         <?php endif; ?>
         
+        <?php
+        if(get_field('hinge_render')) :         
+            $render         = array_pop(get_field('hinge_render'));
+            $render_image   = get_field('image_url', $render->ID);
+            $render_masks   = '';
+            
+            foreach(get_field('masks', $render->ID) as $mask_url) :
+                $render_masks .= $mask_url['mask_url'].',';
+            endforeach;
+            $render_masks = rtrim($render_masks,',');
+        ?>
+        <div 
+            class="hinge-render"
+            data-render-image="<?php echo $render_image; ?>"
+            data-render-masks="<?php echo $render_masks; ?>">
+        </div>
+        <?php endif; ?>
         
+        <?php
+        if(get_field('glass_render')) :         
+            $render         = array_pop(get_field('glass_render'));
+            $render_image   = get_field('image_url', $render->ID);
+            $render_masks   = '';
+            
+            foreach(get_field('masks', $render->ID) as $mask_url) :
+                $render_masks .= $mask_url['mask_url'].',';
+            endforeach;
+            $render_masks = rtrim($render_masks,',');
+        ?>
+        <div 
+            class="hinge-render"
+            data-render-image="<?php echo $render_image; ?>"
+            data-render-masks="<?php echo $render_masks; ?>"
+            data-render-texture="<?php the_field('hinge_texture'); ?>">
+        </div>
+        <?php endif; ?>
+        
+        <!-- SECTION: Hutch Render data ===============================
+             =========================================================== -->
         <?php if(get_field('does_this_have_a_hutch')) : ?>
         <?php
         if(get_field('hutch_doordrawer_render')) :         
@@ -203,6 +241,47 @@
             data-render-masks="<?php echo $render_masks; ?>">
         </div>
             <?php endwhile; ?>
+        <?php endif; ?>
+        
+        <?php if(have_rows('hutch_glass_render')) : ?>
+            <?php while(have_rows('hutch_glass_render')) : the_row(); 
+                $render         = array_pop(get_sub_field('glass_render'));
+                $render_image   = get_field('image_url', $render->ID);
+                $render_masks   = '';
+                
+                foreach(get_field('masks', $render->ID) as $mask_url) :
+                    $render_masks .= $mask_url['mask_url'].',';
+                endforeach;
+                $render_masks = rtrim($render_masks,',');
+                
+                $related_object = array_pop(get_sub_field('related_option'));
+                $related_option = $related_object->post_name; ?>
+        <div 
+            class="hutch-glass-render"
+            data-related-option="<?php echo $related_option; ?>"
+            data-render-image="<?php echo $render_image; ?>"
+            data-render-masks="<?php echo $render_masks; ?>">
+        </div>
+            <?php endwhile; ?>
+        <?php endif; ?>
+        
+        <?php
+        if(get_field('hutch_hinge_render')) :         
+            $render         = array_pop(get_field('hutch_hinge_render'));
+            $render_image   = get_field('image_url', $render->ID);
+            $render_masks   = '';
+            
+            foreach(get_field('masks', $render->ID) as $mask_url) :
+                $render_masks .= $mask_url['mask_url'].',';
+            endforeach;
+            $render_masks = rtrim($render_masks,',');
+        ?>
+        <div 
+            class="hutch-hinge-render"
+            data-render-image="<?php echo $render_image; ?>"
+            data-render-masks="<?php echo $render_masks; ?>"
+            data-render-texture="<?php the_field('hinge_texture'); ?>">
+        </div>
         <?php endif; ?>
         
         <?php endif; ?>

@@ -1,4 +1,5 @@
 (function($) { 
+
 	$(document).ready(function() {
         menuDropdown();
         populateMatcher();
@@ -24,7 +25,7 @@
     
     function allowThrough() {
         $('.no-pricing').click(function(e) {
-            Cookies.set('cgStandardUser','true', { expires : 7 });
+            Cookies.set('cgStandardUser','true', { expires : 1 });
         });
         
         if(Cookies.get('cgStandardUser')) {

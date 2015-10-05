@@ -383,11 +383,11 @@ function pricingByDimensions() {
     var calculatedPrice = 0;
     
     if(tableArea <= 2520) {
-        calculatedPrice = 699;
+        calculatedPrice = 679;
     } else if (tableArea <= 3000) {
-        calculatedPrice = 899;
+        calculatedPrice = 879;
     } else if (tableArea <= 3432) {
-        calculatedPrice = 999;
+        calculatedPrice = 979;
     } else {
         calculatedPrice = 1025
     }

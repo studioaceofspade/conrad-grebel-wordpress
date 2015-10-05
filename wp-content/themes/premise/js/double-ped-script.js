@@ -23,7 +23,7 @@ function setTableObject() {
     
     if($('[data-option-id="winchester"]').hasClass('selected')) {
         $('[data-step-id="choose-an-edge-profile"]').find('.selected').removeClass('selected');
-        $('[data-step-id="choose-an-edge-profile"]').find('[data-option-id="natural"').addClass('selected');
+        $('[data-step-id="choose-an-edge-profile"]').find('[data-option-id="natural"]').addClass('selected');
     }
     
     if($('#double-pedestal-table').data('edit') === '') {

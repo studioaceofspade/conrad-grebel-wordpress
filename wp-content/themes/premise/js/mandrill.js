@@ -317,7 +317,51 @@ function createBuilds() {
             
             $stage.append($column);
 
+        } else if(collection[n].furnitureType[0] == 'servers') {
+            baseurl = $('.site-meta').data('site-url');
+            editurl = baseurl + '/' + collection[n].furnitureType[0] + '/' + '?edit-collection=' + n;
+            
+            price       = parseFloat(collection[n].amount);
+            
+            total += price;
+            
+            $column = $('<div class="col-md-6">');
+            $box    = $('<div class="box">');
+            
+            $imageBox  = $('<div class="image">');
+            $image     = $('<img src="' + collection[n].imageParts.chain + '">');
+
+            $price     = $('<span class="build-total">$' + price.toFixed(2) + '</span>');
+            
+            $printPrice = $('<li>' + collection[n].furnitureType[1] + ': $' + price.toFixed(2) + '</li>');
+            $priceLines = $('.print-line-price').find('ul');
+            $printPrice.appendTo($priceLines);
+            
+            $delete    = $('<a href="#" class="delete-object" data-delete="' + n  + '">Remove This</a>');
+            $imageBox.append($delete);
+            $imageBox.append($price);
+            $imageBox.append($image);
+            
+            $bar = $('<div class="bar">');
+            $title = $('<h2 class="title">' + collection[n].furnitureType[1] +'</h2>');
+    
+            $editLink = $('<a href="' + editurl + '" class="button">');
+            $editSpan = $('<span>edit</span>');
+            $editIcon = $('<i class="fa fa-chevron-right"></i>');
+            $editLink.append($editSpan);
+            $editLink.append($editIcon);
+            
+            $bar.append($title);
+            $bar.append($editLink);
+            
+            $box.append($imageBox);
+            $box.append($bar);
+            $column.append($box);
+            
+            $stage.append($column);
+
         }
+        
     }
     
     $('.price').show().find('.total').html(total.toFixed(2));
@@ -583,7 +627,8 @@ function buildAdminEmail() {
             } 
             $furnitureTable.append($dynamic);
             $('.admin-furniture-objects').append($furnitureContainer);
-        } else if(collection[i].furnitureType[0] == 'chair') {
+        } 
+        else if(collection[i].furnitureType[0] == 'chair') {
 
             chairData = collection[i];
             
@@ -711,7 +756,8 @@ function buildAdminEmail() {
             
             $furnitureTable.append($dynamic);
             $('.admin-furniture-objects').append($furnitureContainer);
-        } else if(collection[i].furnitureType[0] == 'double-pedestal-table') {
+        } 
+        else if(collection[i].furnitureType[0] == 'double-pedestal-table') {
             tableData = collection[i];
             
             var amount = '$' + tableData.amount;
@@ -854,7 +900,8 @@ function buildAdminEmail() {
             $furnitureTable.append($dynamic);
             $('.admin-furniture-objects').append($furnitureContainer);
             
-        } else if(collection[i].furnitureType[0] == 'single-pedestal-table') {
+        } 
+        else if(collection[i].furnitureType[0] == 'single-pedestal-table') {
 
             tableData = collection[i];
             
@@ -993,7 +1040,8 @@ function buildAdminEmail() {
             $furnitureTable.append($dynamic);
             $('.admin-furniture-objects').append($furnitureContainer);
             
-        } else if(collection[i].furnitureType[0] == 'trestle-table') {
+        } 
+        else if(collection[i].furnitureType[0] == 'trestle-table') {
 
             tableData = collection[i];
             
@@ -1120,9 +1168,159 @@ function buildAdminEmail() {
                     }
                     
                 } 
-            }
+            } 
 
             $furnitureTable.append($dynamic);
+            $('.admin-furniture-objects').append($furnitureContainer);
+        } 
+        else if(collection[i].furnitureType[0] == 'servers') {
+            
+            console.log('work');
+            
+            serverData = collection[i];
+            
+            // 1. Set the furniture type            
+            $furnitureType = $('<h3>' + serverData.furnitureType[1] + ', Total: $' + serverData.amount + '</h3>');
+            
+            // 2. Display the image
+            $image = $('<img style="max-width:400px; margin: 20px 0 20px 0;">');
+            $image.attr('src', serverData.imageParts.chain);
+            
+            // 3. Setup the data server
+            $furnitureContainer = $('<div class="furniture-container">');
+            $furnitureserver     = $('<table style=" width:100%;" class="review-table">');
+            $serverHeader        = $('<thead>');
+            
+            $th1                = $('<th style="width: 33.33333%; text-align: left; border-bottom: 1px solid #ccc;">');
+            $th2                = $('<th style="width: 33.33333%; text-align: left; border-bottom: 1px solid #ccc;">');
+            
+            $th1.html('Option Name');
+            $th2.html('Your Choice');
+            
+            $serverHeader.append($th1);
+            $serverHeader.append($th2);
+            
+            $furnitureserver.append($serverHeader);
+            $furnitureContainer.append($furnitureType);
+            $furnitureContainer.append($image);
+            $furnitureContainer.append($furnitureserver);
+            
+            $dynamic = $('<tbody>');    
+            
+            // Variables for configuring the server output
+            wood        = serverData['choose-a-wood-type'].selected[0];
+            var hardwareSet = false;
+            for(step in serverData) {
+                console.log(step);
+                if( step != 'imageParts' && 
+                    step != 'selectedReference' &&
+                    step != 'skips' &&
+                    step != 'amount' &&
+                    step != 'furnitureType') {
+                    
+                    var stepName    = serverData[step].name;
+                    var optionName  = $('[data-step-id="'+step+'"]').find('.selected .title').html();
+                    var stepID      = step;
+                    
+                    // 2 & 3. Server Style and Model
+                    if(step == 'choose-a-server-style') { 
+                        $serverStyle = $('<tr>');
+                        $('<td></td>').html('Server Style').appendTo($serverStyle);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($serverStyle);
+                        $dynamic.append($serverStyle);
+                        $model = $('<tr>');
+                        $model.append('<td>Model Number</td>');
+                        if('hutch-cherry' in serverData[step].pricing) {
+                            if('do-you-want-a-hutch' in serverData) {
+                                if(serverData['do-you-want-a-hutch'].selected[0] === 'hutch') {
+                                    $('<td>')
+                                        .html('Hutch: ' + serverData[step].model + 'U, Server: ' + serverData[step].model + 'B')
+                                        .appendTo($model);
+                                } else {
+                                    $('<td>')
+                                        .html(serverData[step].model)
+                                        .appendTo($model);
+                                }
+                            } else {
+                                $('<td>')
+                                    .html(serverData[step].model)
+                                    .appendTo($model);
+                            }
+                        } else {
+                            $('<td>')
+                                .html(serverData[step].model)
+                                .appendTo($model);
+                        }
+                        $dynamic.append($model);
+                    }
+                    // 4. Wood Type
+                    if(step == 'choose-a-wood-type') {
+                        $woodType = $('<tr>');
+                        $('<td></td>').html('Wood Type').appendTo($woodType);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($woodType);
+                        $dynamic.append($woodType);
+                    }
+                    // 5. Hardware
+                    if(step == 'choose-your-hardware' && !hardwareSet) {
+                        $hardware = $('<tr>');
+                        $('<td></td>').html('Hardware').appendTo($hardware);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($hardware);
+                        $dynamic.append($hardware);
+                        hardwareSet = true;
+                    }
+                    
+                    // 6. Drawer Type
+                    if(step == 'choose-your-drawer-type') {
+                        $drawer = $('<tr>');
+                        $('<td></td>').html('Drawer').appendTo($drawer);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($drawer);
+                        $dynamic.append($drawer);
+                    }
+                   
+                    // 7 & 8. Base + Door/Drawer Color
+                    if("type" in serverData[step]) {
+                        
+                        if(serverData[step].type == 'top-color') {
+                            $color = $('<tr>');
+                            $('<td></td>').html('Server Base Color').appendTo($color);
+                            $('<td></td>').html(serverData[step].selected[1]).appendTo($color);                            
+                            $dynamic.append($color);
+                        }
+                        if(serverData[step].type == 'bottom-color') {
+                            $color = $('<tr>');
+                            $('<td></td>').html('Door and Drawer Color').appendTo($color);
+                            $('<td></td>').html(serverData[step].selected[1]).appendTo($color);                            
+                            $dynamic.append($color);
+                        }
+                        
+                    }
+                    
+                    // 9. Distressing 
+                    if(step == 'choose-your-server-distressing') { 
+                        $distressing = $('<tr>');
+                        $('<td></td>').html('Distressing Level').appendTo($distressing);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($distressing);
+                        $dynamic.append($distressing);
+                    }
+                    
+                    // 10. Rub through
+                    if(step == 'choose-your-server-rub-through') { 
+                        $rub = $('<tr>');
+                        $('<td></td>').html('Rub Through').appendTo($rub);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($rub);
+                        $dynamic.append($rub);
+                    } 
+                    // 11. Glass Type
+                    if(step == 'choose-your-glass') {
+                        $glass = $('<tr>');
+                        $('<td></td>').html('Glass Type').appendTo($glass);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($glass);
+                        $dynamic.append($glass);
+                    }                    
+                } 
+            }
+
+            $furnitureserver.append($dynamic);
             $('.admin-furniture-objects').append($furnitureContainer);
         }
     }
@@ -1752,6 +1950,153 @@ function buildUserEmail() {
             }
 
             $furnitureTable.append($dynamic);
+            $('.user-furniture-objects').append($furnitureContainer);
+        } else if(collection[i].furnitureType[0] == 'servers') {
+            
+            serverData = collection[i];
+            
+            // 1. Set the furniture type            
+            $furnitureType = $('<h3>' + serverData.furnitureType[1] + ', Total: $' + serverData.amount + '</h3>');
+            
+            // 2. Display the image
+            $image = $('<img style="max-width:400px; margin: 20px 0 20px 0;">');
+            $image.attr('src', serverData.imageParts.chain);
+            
+            // 3. Setup the data server
+            $furnitureContainer = $('<div class="furniture-container">');
+            $furnitureserver     = $('<table style=" width:100%;" class="review-table">');
+            $serverHeader        = $('<thead>');
+            
+            $th1                = $('<th style="width: 33.33333%; text-align: left; border-bottom: 1px solid #ccc;">');
+            $th2                = $('<th style="width: 33.33333%; text-align: left; border-bottom: 1px solid #ccc;">');
+            
+            $th1.html('Option Name');
+            $th2.html('Your Choice');
+            
+            $serverHeader.append($th1);
+            $serverHeader.append($th2);
+            
+            $furnitureserver.append($serverHeader);
+            $furnitureContainer.append($furnitureType);
+            $furnitureContainer.append($image);
+            $furnitureContainer.append($furnitureserver);
+            
+            $dynamic = $('<tbody>');    
+            
+            // Variables for configuring the server output
+            wood        = serverData['choose-a-wood-type'].selected[0];
+            var hardwareSet = false;
+            for(step in serverData) {
+                console.log(step);
+                if( step != 'imageParts' && 
+                    step != 'selectedReference' &&
+                    step != 'skips' &&
+                    step != 'amount' &&
+                    step != 'furnitureType') {
+                    
+                    var stepName    = serverData[step].name;
+                    var optionName  = $('[data-step-id="'+step+'"]').find('.selected .title').html();
+                    var stepID      = step;
+                    
+                    // 2 & 3. Server Style and Model
+                    if(step == 'choose-a-server-style') { 
+                        $serverStyle = $('<tr>');
+                        $('<td></td>').html('Server Style').appendTo($serverStyle);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($serverStyle);
+                        $dynamic.append($serverStyle);
+                        $model = $('<tr>');
+                        $model.append('<td>Model Number</td>');
+                        if('hutch-cherry' in serverData[step].pricing) {
+                            if('do-you-want-a-hutch' in serverData) {
+                                if(serverData['do-you-want-a-hutch'].selected[0] === 'hutch') {
+                                    $('<td>')
+                                        .html('Hutch: ' + serverData[step].model + 'U, Server: ' + serverData[step].model + 'B')
+                                        .appendTo($model);
+                                } else {
+                                    $('<td>')
+                                        .html(serverData[step].model)
+                                        .appendTo($model);
+                                }
+                            } else {
+                                $('<td>')
+                                    .html(serverData[step].model)
+                                    .appendTo($model);
+                            }
+                        } else {
+                            $('<td>')
+                                .html(serverData[step].model)
+                                .appendTo($model);
+                        }
+                        $dynamic.append($model);
+                    }
+                    // 4. Wood Type
+                    if(step == 'choose-a-wood-type') {
+                        $woodType = $('<tr>');
+                        $('<td></td>').html('Wood Type').appendTo($woodType);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($woodType);
+                        $dynamic.append($woodType);
+                    }
+                    // 5. Hardware
+                    if(step == 'choose-your-hardware' && !hardwareSet) {
+                        $hardware = $('<tr>');
+                        $('<td></td>').html('Hardware').appendTo($hardware);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($hardware);
+                        $dynamic.append($hardware);
+                        hardwareSet = true;
+                    }
+                    
+                    // 6. Drawer Type
+                    if(step == 'choose-your-drawer-type') {
+                        $drawer = $('<tr>');
+                        $('<td></td>').html('Drawer').appendTo($drawer);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($drawer);
+                        $dynamic.append($drawer);
+                    }
+                   
+                    // 7 & 8. Base + Door/Drawer Color
+                    if("type" in serverData[step]) {
+                        
+                        if(serverData[step].type == 'top-color') {
+                            $color = $('<tr>');
+                            $('<td></td>').html('Server Base Color').appendTo($color);
+                            $('<td></td>').html(serverData[step].selected[1]).appendTo($color);                            
+                            $dynamic.append($color);
+                        }
+                        if(serverData[step].type == 'bottom-color') {
+                            $color = $('<tr>');
+                            $('<td></td>').html('Door and Drawer Color').appendTo($color);
+                            $('<td></td>').html(serverData[step].selected[1]).appendTo($color);                            
+                            $dynamic.append($color);
+                        }
+                        
+                    }
+                    
+                    // 9. Distressing 
+                    if(step == 'choose-your-server-distressing') { 
+                        $distressing = $('<tr>');
+                        $('<td></td>').html('Distressing Level').appendTo($distressing);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($distressing);
+                        $dynamic.append($distressing);
+                    }
+                    
+                    // 10. Rub through
+                    if(step == 'choose-your-server-rub-through') { 
+                        $rub = $('<tr>');
+                        $('<td></td>').html('Rub Through').appendTo($rub);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($rub);
+                        $dynamic.append($rub);
+                    } 
+                    // 11. Glass Type
+                    if(step == 'choose-your-glass') {
+                        $glass = $('<tr>');
+                        $('<td></td>').html('Glass Type').appendTo($glass);
+                        $('<td></td>').html(serverData[step].selected[1]).appendTo($glass);
+                        $dynamic.append($glass);
+                    }                    
+                } 
+            }
+
+            $furnitureserver.append($dynamic);
             $('.user-furniture-objects').append($furnitureContainer);
         }
     }

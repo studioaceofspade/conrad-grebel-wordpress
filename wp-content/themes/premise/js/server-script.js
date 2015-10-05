@@ -8,7 +8,7 @@ var collection = {};
         setHardwareDefault();
         setServerObject();
         monitorImage();
-        // configureReview();
+        configureReview();
         reviewButtonController();
         editButtonController();
         setServerPricing();
@@ -32,7 +32,7 @@ function setServerObject() {
     var selected    = new Array;
     var imageParts  = {};
     
-    if($('#servers').data('edit') === '') {
+    if($('#servers').attr('data-edit') == '') {
                
         $('.step').each(function(index) {
             
@@ -163,8 +163,8 @@ function setServerObject() {
                             'pricing'   : {
                                 'cherry'        : $serverPricing.data('premium-price'),
                                 'oak'           : $serverPricing.data('base-price'),
-                                'hutch-cherry'  : $hutchPricing.data('hutch-premium-price'),
-                                'hutch-oak'     : $hutchPricing.data('hutch-base-price'),
+                                'hutch-cherry'  : $hutchPricing.data('premium-price'),
+                                'hutch-oak'     : $hutchPricing.data('base-price'),
                                 'drawers'       : $serverPricing.data('drawers'),
                             }
                         }
@@ -199,8 +199,8 @@ function setServerObject() {
         serverData['furnitureType']     = [$('.furniture-container').attr('id'), $('.furniture-container').data('type-title')];
 
     } else {
-        console.log('Loading a table to be edited');
         loadCompletedServer();  
+        console.log('loading a completed server');
     }
 
     // Find our selected server, hardware, and hutch
@@ -322,7 +322,6 @@ function setServerObject() {
     // If we have a hutch and it is selected
     var hasHutch = true;
     if(serverData.skips.indexOf('do-you-want-a-hutch') <= 0) {
-        console.log('hutch is not in skips');
         if(serverData['do-you-want-a-hutch'].selected[0] === 'hutch') {
             hutch = {
                 'image' : hutchRender,
@@ -368,8 +367,6 @@ function setServerObject() {
     // Get our chain
     var chain = '';
     
-    console.log(hasHutchGlass);
-    
     if(hasHutch) {
         chain = createServerChain(hutch, hutchDoorDrawer, hutchHardware, hutchHinge, hutchGlass);
     } else { 
@@ -384,9 +381,6 @@ function setServerObject() {
     
     // Ensure that the review page is updated correctly
     configureReview();
-    
-    // Log our data so we know we're updated and can develop quickly
-    console.log(serverData);
 }
 
 function reviewButtonController() {
@@ -417,9 +411,7 @@ function editButtonController() {
         
         $('.step.active').removeClass('active');
         $('.step[data-step-id="' + $(this).data('edit-step') + '"]').addClass('active');
-        
-        console.log($('.step[data-step-id="' + $(this).data('edit-step') + '"]'));
-        
+                
         if(serverData.skips) {
             delete serverData.skips;
         }
@@ -436,6 +428,7 @@ function setServerPricing() {
     
     var wood        = serverData['choose-a-wood-type'].selected[0];
     var server      = serverData['choose-a-server-style'];
+    var hutch       = serverData['choose-a-server-style'];
     var addons      = new Array();
     var percents    = new Array();
     var amount      = 0;
@@ -455,6 +448,7 @@ function setServerPricing() {
                     
                     if(serverData[step].pricing.type == 'flat') {
                         addons.push(serverData[step].pricing.rate);
+                        console.log(step);
                     } else if (serverData[step].pricing.type == 'percentage') {
                         percents.push(serverData[step].pricing.percent);
                     }
@@ -480,16 +474,37 @@ function setServerPricing() {
         }
     }
 
-    if(wood == 'oak' || wood == 'maple') {
-        amount      = server.pricing.oak;
+    if(serverData.skips.indexOf('do-you-want-a-hutch') <= 0) { // if this has a hutch
+        if(serverData['do-you-want-a-hutch'].selected[0] === 'hutch') { // if the user has a hutch selected
+            if(wood == 'oak' || wood == 'maple') {
+                amount      = server.pricing.oak + server.pricing['hutch-oak'];
+            } else {
+                amount      = server.pricing.cherry + server.pricing['hutch-cherry'];  
+            }
+        } else {
+            if(wood == 'oak' || wood == 'maple') {
+                amount      = server.pricing.oak;
+            } else {
+                amount      = server.pricing.cherry;  
+            }
+        }
     } else {
-        amount      = server.pricing.cherry;  
+        // use the server pricing
+        if(wood == 'oak' || wood == 'maple') {
+            amount      = server.pricing.oak;
+        } else {
+            amount      = server.pricing.cherry;  
+        }
     }
+    
+    console.log(amount);
 
     var addonTotal = 0;
     for (var x = 0; x < addons.length; x++) {
         addonTotal += addons[x];
     }
+    
+    console.log(addonTotal);
     
     for (var y = 0; y < percents.length; y++) {
         amount      = amount * (1 + percents[y]/100);
@@ -656,7 +671,7 @@ function loadCompletedServer() {
     
     getBuilds();
     
-    serverData = collection[$('#server').data('edit')];
+    serverData = collection[$('#servers').data('edit')];
     
     for(step in serverData) {
         if( step != 'dimensions' && 
@@ -665,7 +680,7 @@ function loadCompletedServer() {
             step != 'skips' &&
             step != 'amount' &&
             step != 'furnitureType') {
-                
+
             $('[data-step-id="' + step + '"]')
                 .find('.selected')
                 .removeClass('selected');
@@ -675,7 +690,7 @@ function loadCompletedServer() {
         }
     }
     
-    $('#server').data('edit','');
+    $('#servers').attr('data-edit','');
 }
 
 function stepMovementControls() {
@@ -729,7 +744,6 @@ function stepMovementControls() {
             for(var n = 0; n < $('.step').length; n++) {
                 if(moveForward(n, $steps, $activeStep) && !halt) {
                     var next = $steps.get($activeStep.index() + (n + 1));
-                    console.log($activeStep.index() + (n + 1));
                     $(next).addClass('active');
                     setRenderControls();                    
                     halt = true;
@@ -888,19 +902,6 @@ function setRenderControls() {
 }
 
 function createServerChain(serverBase, doorDrawer, hardware, hinge, glass) {
-    // Log our data that we're passing along to double check it all
-    //console.log('Server Base:');
-    //console.log(serverBase);
-    //console.log('Doors and Drawers: ' + doorDrawer);
-    //console.log(doorDrawer);
-    //console.log('Hardware:');
-    //console.log(hardware);
-    //console.log('Hutch Base:');
-    console.log(serverBase);
-    //console.log('Hutch Doors and Drawers:');
-    //console.log(hutchDoorDrawer);
-    //console.log('Hutch Hardware:');
-    //console.log(hutchHardware);
     
 	// Set the start of our string to the hosting location
 	var baseURL = 'http://conradgrebel.ma.liquifire.com/conradgrebel?';
@@ -974,8 +975,6 @@ function createServerChain(serverBase, doorDrawer, hardware, hinge, glass) {
     
     if(hinge && glass) {
         
-        console.log('hinge and glass');
-        
         output += 'select=image[hinge]&';
         output += 'composite=compose[over],image[glass],x[0],y[0]&';
         
@@ -990,8 +989,6 @@ function createServerChain(serverBase, doorDrawer, hardware, hinge, glass) {
         
     } else if (hinge && !glass) {
         
-        console.log('hinge');
-        
         output += 'select=image[hardware]&';
         output += 'composite=compose[over],image[hinge],x[0],y[0]&';
         
@@ -1003,8 +1000,6 @@ function createServerChain(serverBase, doorDrawer, hardware, hinge, glass) {
         
     } else if (glass && !hinge) {
         
-        console.log('glass');
-        
         output += 'select=image[hardware]&';
         output += 'composite=compose[over],image[glass],x[0],y[0]&';
         
@@ -1014,8 +1009,6 @@ function createServerChain(serverBase, doorDrawer, hardware, hinge, glass) {
         output += 'select=image[server]&';
         output += 'composite=compose[over],image[doorDrawer],x[0],y[0]&';
     } else {
-        
-        console.log('no glass or hinge');
         
         // Combine the top and base canvas
         output += 'select=image[doorDrawer]&';

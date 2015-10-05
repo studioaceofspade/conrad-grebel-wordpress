@@ -498,11 +498,23 @@ function setServerPricing() {
     }
     
     console.log(amount);
+    
+    var drawerCost = 0;
+    if(serverData.skips.indexOf('choose-your-drawer-type') <= 0) {
+        var numDrawers = server.pricing.drawers;
+        if(serverData['choose-your-drawer-type'].selected[0] == 'soft-close-undermount') {
+            drawerCost = numDrawers * 20;
+        } else {
+            drawerCost = 0;
+        }
+    }
 
     var addonTotal = 0;
     for (var x = 0; x < addons.length; x++) {
         addonTotal += addons[x];
     }
+    
+    addonTotal += drawerCost;
     
     console.log(addonTotal);
     

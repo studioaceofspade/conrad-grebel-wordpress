@@ -96,6 +96,19 @@
         
         <?php endif; ?>
         <?php endif; ?>
+        
+        <!-- SECTION: Color data ======================================= 
+             =========================================================== -->
+        <?php if(!get_field('controlled_by_color')) : ?>
+        <div 
+            class="hardware-color"
+            data-color="<?php the_field('texture'); ?>">
+        </div>
+        <?php else : ?>
+        <div 
+            class="hardware-color controlled-by-color">
+        </div>
+        <?php endif; ?>
     
     </div>
     

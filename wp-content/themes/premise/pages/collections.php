@@ -101,15 +101,14 @@ get_header(); ?>
     </div>
     
     <div class="print-price">
-        <hr>
-        <h3>Total Cost: <span class="total-print-cost"></span></h1>
+        <hr/>
+        <h3>Total Cost: <span class="total-print-cost"></span></h3>
         <div class="print-line-price">
             <ul>
             </ul>
         </div>
     </div>
-    
-
+   
     <div class="remodal sender" data-remodal-id="send-message">
         <h1>Finalize your Collection</h1>
         <p>By finalizing your customizations, we will email you everything you've made so far. We will also email it to our specialized sales staff to assist you in finishing your purchase. By the way, as all good companies should do, we <strong>never use your email for marketing purposes.</p>

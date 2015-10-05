@@ -25,6 +25,10 @@
     <script src="<?php bloginfo('template_directory'); ?>/js/trestle-script.js"></script>
     <?php endif; ?>
     
+    <?php if($post->post_name == 'servers') : ?>
+    <script src="<?php bloginfo('template_directory'); ?>/js/server-script.js"></script>
+    <?php endif; ?>
+    
 	</div><!-- remodal-bg -->
 	</body>
 </html>

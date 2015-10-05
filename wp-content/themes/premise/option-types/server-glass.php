@@ -4,7 +4,7 @@
         data-option-id="<?php echo $post->post_name; ?>">
         <div class="image">
             
-            <?php if((get_field('does_this_modify_price') && $typeID == 'leg-table') || (get_field('does_this_modify_price') &&  $typeID == 'chair') || (get_field('does_this_modify_price') &&  $typeID == 'servers')) : ?>
+            <?php if(get_field('does_this_modify_price')) : ?>
             <div class="price-increase">
                 <i class="fa fa-dollar"></i>
             </div>

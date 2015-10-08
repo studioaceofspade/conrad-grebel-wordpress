@@ -158,7 +158,8 @@
         <div 
             class="hinge-render"
             data-render-image="<?php echo $render_image; ?>"
-            data-render-masks="<?php echo $render_masks; ?>">
+            data-render-masks="<?php echo $render_masks; ?>"
+            data-render-texture="<?php the_field('hinge_texture'); ?>">
         </div>
         <?php endif; ?>
         
@@ -174,10 +175,9 @@
             $render_masks = rtrim($render_masks,',');
         ?>
         <div 
-            class="hinge-render"
+            class="glass-render"
             data-render-image="<?php echo $render_image; ?>"
-            data-render-masks="<?php echo $render_masks; ?>"
-            data-render-texture="<?php the_field('hinge_texture'); ?>">
+            data-render-masks="<?php echo $render_masks; ?>">
         </div>
         <?php endif; ?>
         

@@ -206,7 +206,9 @@ function setServerObject() {
     // Find our selected server, hardware, and hutch
     server      = serverData['choose-a-server-style'].selected[0];
     hardware    = serverData['choose-your-hardware'].selected[0];
-    
+    if('choose-your-glass' in serverData) {
+        glass    = serverData['choose-your-glass'].selected[0];
+    }
     $selectedServer = $('[data-option-id="' + server + '"]').siblings('.option-settings');
     $selectedHardware = $('[data-option-id="' + hardware + '"]').siblings('.option-settings');
     
@@ -239,10 +241,12 @@ function setServerObject() {
         hasHinge = false;
     }
     
+    console.log(hingeRender);
+    
     // Grab our glass information
     var hasGlass = true;
     if($selectedServer.find('.glass-render').length > 0) {
-        glassRender = $selectedServer.find('.glass-render').data('render-image');
+        glassRender = $selectedServer.find('.glass-render[data-related-option="' + glass + '"]').data('render-image');
     } else {
         hasGlass = false;
     }
@@ -280,11 +284,10 @@ function setServerObject() {
     // Grab our glass information
     var hasHutchGlass = true;
     if($selectedServer.find('.hutch-glass-render').length > 0) {
-        hutchGlassRender = $selectedServer.find('.hutch-glass-render').data('render-image');
+        hutchGlassRender = $selectedServer.find('.hutch-glass-render[data-related-option="' + glass + '"]').data('render-image');
     } else {
         hasHutchGlass = false;
     }
-    
     
     // Setup our objects/vars to pass to the chain function
     serverBase = {
@@ -318,6 +321,10 @@ function setServerObject() {
     } else {
         glass = false;
     }
+    
+    console.log(glass);
+    
+    console.log(hinge);
     
     // If we have a hutch and it is selected
     var hasHutch = true;
@@ -362,7 +369,13 @@ function setServerObject() {
         }
     } else {
         hasHutch = false;
+        hutchGlass = false;
+        hutchHinge = false;
+        hutchHardware = false
+        hutch = false;
+        hutchDoorDrawer = false;
     }
+    console.log(hutchGlass);
     
     // Get our chain
     var chain = '';

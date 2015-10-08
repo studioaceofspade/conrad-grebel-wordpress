@@ -26,7 +26,6 @@
     }
     
     function allowThrough() {
-	Cookies.remove('cgStandardUser');
         $('.no-pricing').click(function(e) {
             Cookies.set('cgStandardUser','true', { expires : 1 });
         });

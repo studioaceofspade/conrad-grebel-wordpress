@@ -163,22 +163,27 @@
         </div>
         <?php endif; ?>
         
-        <?php
-        if(get_field('glass_render')) :         
-            $render         = array_pop(get_field('glass_render'));
-            $render_image   = get_field('image_url', $render->ID);
-            $render_masks   = '';
-            
-            foreach(get_field('masks', $render->ID) as $mask_url) :
-                $render_masks .= $mask_url['mask_url'].',';
-            endforeach;
-            $render_masks = rtrim($render_masks,',');
-        ?>
+        <?php if(have_rows('glass_renders')) : ?>
+        
+            <?php while(have_rows('glass_renders')) : the_row(); 
+                $render         = array_pop(get_sub_field('render'));
+                $render_image   = get_field('image_url', $render->ID);
+                $render_masks   = '';
+                
+                foreach(get_field('masks', $render->ID) as $mask_url) :
+                    $render_masks .= $mask_url['mask_url'].',';
+                endforeach;
+                $render_masks = rtrim($render_masks,',');
+                
+                $related_object = array_pop(get_sub_field('related_option'));
+                $related_option = $related_object->post_name; ?>
         <div 
             class="glass-render"
+            data-related-option="<?php echo $related_option; ?>"
             data-render-image="<?php echo $render_image; ?>"
             data-render-masks="<?php echo $render_masks; ?>">
         </div>
+            <?php endwhile; ?>
         <?php endif; ?>
         
         <!-- SECTION: Hutch Render data ===============================

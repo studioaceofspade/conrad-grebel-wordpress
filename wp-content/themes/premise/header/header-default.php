@@ -141,6 +141,16 @@ E-Mail: jon@studioaceofspade.com
                                 <span class="nav-icon"><i class="fa fa-arrow-circle-o-right"></i></span>
                             </a>
                         </li>
+                        <?php if(is_user_logged_in()) : ?>
+                        <li>
+                            <?php wp_loginout( get_bloginfo('url'), 'true' ); ?> 
+                        </li>
+                        <?php endif; ?>
+                        <?php if(isset($_COOKIE['cgStandardUser'])) : ?>
+                        <li>
+                            <a href="#" class="destroy-cookie">Log out</a>
+                        </li>
+                        <?php endif; ?>
                     </ul>
                 </nav>
                 <a href="<?php bloginfo('url'); ?>" class="branding">

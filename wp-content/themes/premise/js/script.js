@@ -6,6 +6,13 @@
         menuDropdown();
         populateMatcher();
         allowThrough();
+        
+        $('.destroy-cookie').click(function(e) {
+            e.preventDefault();
+            Cookies.remove('cgStandardUser');
+            localStorage.clear();
+            window.location.href = 'http://cg.saos.co';
+        });
     });
     
 

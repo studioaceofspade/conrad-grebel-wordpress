@@ -383,13 +383,19 @@ function pricingByDimensions() {
     var calculatedPrice = 0;
     
     if(tableArea <= 2520) {
-        calculatedPrice = 679;
+        calculatedPrice = 729;
     } else if (tableArea <= 3000) {
-        calculatedPrice = 879;
+        calculatedPrice = 929;
     } else if (tableArea <= 3432) {
-        calculatedPrice = 979;
+        calculatedPrice = 1029;
     } else {
-        calculatedPrice = 1025
+        calculatedPrice = 1099;
+    }
+    
+    if('choose-a-leg-style' in legData) {
+        if(legData['choose-a-leg-style'].selected[0] == 'adams') {
+            calculatedPrice = calculatedPrice - 50;
+        }
     }
     
     if(tableLength > 72 || tableWidth > 72 && tableLength <= 77 && tableLength <= 77) {
@@ -398,8 +404,19 @@ function pricingByDimensions() {
         calculatedPrice += 400
     }
     
-    if(tableLeaves > 1) {
-        calculatedPrice += (tableLeaves-1)*80;
+
+    
+    if('choose-a-thickness' in legData) {
+        if(legData['choose-a-thickness'].selected[0] == '1-thick') {
+            if(tableLeaves > 1) {
+                calculatedPrice += (tableLeaves-1)*80;
+            }
+        } else {
+            if(tableLeaves > 1) {
+                calculatedPrice += ((tableLeaves-1)*80)*1.3;
+            }
+
+        }
     }
     
     dimensions['price'] = calculatedPrice;

@@ -384,8 +384,8 @@ function pricingByDimensions() {
     
     if(tableArea <= 2520) {
         calculatedPrice = 729;
-    } else if (tableArea <= 3000) {
-        calculatedPrice = 929;
+    } else if (tableArea <= 3024) {
+        calculatedPrice = 829;
     } else if (tableArea <= 3432) {
         calculatedPrice = 1029;
     } else {

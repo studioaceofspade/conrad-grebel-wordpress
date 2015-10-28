@@ -59,6 +59,9 @@ get_header(); ?>
             <div class="col-md-12" data-hide-when="chairs">
                 <a href="<?php bloginfo('url'); ?>/furniture/chair" class="button">Add Chairs</a>
             </div>
+            <div class="col-md-12" data-hide-when="servers">
+                <a href="<?php bloginfo('url'); ?>/furniture/servers" class="button">Add a Server or Buffet</a>
+            </div>  
             <div class="col-md-6" data-hide-when="tables">
                 <a href="<?php bloginfo('url'); ?>/furniture/leg-table/" class="button">Add a Leg Table</a>
             </div>

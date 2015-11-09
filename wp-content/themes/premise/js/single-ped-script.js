@@ -243,7 +243,6 @@ function setTableObject() {
     console.log(tableData);
 }
 
-
 function reviewButtonController() {
     $('.review-jump').click(function(e) {
         e.preventDefault();
@@ -679,8 +678,9 @@ function configureReview() {
     oakCost = tableData['choose-a-pedestal-style'].pricing.oak * ($('.retailer-meta').data('price-mod') / 100).toFixed(2);
     
     // Table Style
-    $('.dp-table-style').html(tableData['choose-a-pedestal-style'].selected[1]);
-    $('.dp-table-style-cost').html('$' + oakCost);
+    $('.dp-table-style').html(tableData['choose-a-pedestal-style'].selected[1]);   
+    $('.dp-table-style-cost').html('$' + oakCost.toFixed(2));
+
     
         // Model
     $('.model').html(tableData['choose-a-pedestal-style'].model);
@@ -869,6 +869,15 @@ function setTablePricing() {
 
     var dAddon  = 0;
     var diameter        = tableData.dimensions.diameter;
+    
+    if(diameter >= 48 && diameter < 54) {
+        dAddon = 75;
+    } else if (diameter >= 54 && diameter < 60) {
+        dAddon = 125;
+    } else if (diameter >= 60) {
+        dAddon = 175;
+    }
+    
     $selected = $('[data-step-id="choose-a-pedestal-style"]').find('.selected').siblings('.option-settings');
     $selectedSize = $selected.find('[data-size-available="' + diameter + '"]');
 

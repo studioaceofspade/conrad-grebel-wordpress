@@ -89,9 +89,7 @@ get_header(); ?>
             
         <?php if(!has_term('review', 'step_types')) : ?>
             <?php if(get_field('display_measurement')) : ?>
-            
-
-                
+                  
                 <?php if(get_field('measurement_render') == 'leg') : ?>
                 <div id="tabletop">
                     <div id="total-measurement">
@@ -568,7 +566,7 @@ get_header(); ?>
                             <tbody>
                                 <tr>
                                     <td>Furniture Type</td>
-                                    <td>Trestle Table</td>
+                                    <td>Single Pedestal Table</td>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                 </tr>

@@ -86,6 +86,7 @@ function setChairPricing() {
     var percents    = new Array();
     var amount      = 0;
     var amountArms  = 0;
+    var retailerMod = 0;
     
     for (var step in chairData) {
         
@@ -124,6 +125,11 @@ function setChairPricing() {
                 }
                 
             } 
+            var $selected = $('[data-step-id="' + step + '"]').find('.selected');
+            var $options = $selected.siblings('.option-settings');
+            if($options.find('.retailer-price-mod').length > 0) {
+                retailerMod += $options.find('.retailer-price-mod').data('mod-amount');
+            }
         }
     }
 
@@ -150,8 +156,8 @@ function setChairPricing() {
         addonTotal += addons[x];
     }
     
-    var amount      = addonTotal + amount;
-    var amountArms  = addonTotal + amountArms;
+    var amount      = addonTotal + amount + retailerMod;
+    var amountArms  = addonTotal + amountArms + retailerMod;
     
     for (var y = 0; y < percents.length; y++) {
         amount      = amount * (1 + percents[y]/100);

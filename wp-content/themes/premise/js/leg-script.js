@@ -43,8 +43,6 @@ function editButtonController() {
         $('.step.active').removeClass('active');
         $('.step[data-step-id="' + $(this).data('edit-step') + '"]').addClass('active');
         
-        console.log($('.step[data-step-id="' + $(this).data('edit-step') + '"]'));
-        
         if(legData.skips) {
             delete legData.skips;
         }
@@ -189,6 +187,7 @@ function setLegTablePricing() {
     
     var addons      = new Array();
     var percents    = new Array();
+    var retailerMod = 0;
     
     for (var step in legData) {
         
@@ -219,12 +218,14 @@ function setLegTablePricing() {
                             }
                         }                    
                     }
-                    
-                    // console.log(percents);
-                    // console.log(addons);
-                }
-                
+                }                
             } 
+            
+            var $selected = $('[data-step-id="' + step + '"]').find('.selected');
+            var $options = $selected.siblings('.option-settings');
+            if($options.find('.retailer-price-mod').length > 0) {
+                retailerMod += $options.find('.retailer-price-mod').data('mod-amount');
+            }
         }
     }
     
@@ -244,7 +245,7 @@ function setLegTablePricing() {
     // Configure our base price based on the catalog
     // var cgPrice = (prePercentagePrice * ($('.retailer-meta').data('price-mod') / 100)).toFixed(2);
     
-    var cgPrice = prePercentagePrice;
+    var cgPrice = prePercentagePrice + retailerMod;
     
     // Set the pricing by retailer rules
     var markup = 100;
@@ -549,10 +550,7 @@ function setLegTableObject() {
                             'options'   : relatedPrices
                         }
                     }
-                    
-                    console.log(stepId);
-                    
-                    
+
                     // See if we have any skips yet, if not add them in
                     if(!legData.hasOwnProperty('skips')) {
                         legData['skips'] = skipArray;
@@ -578,13 +576,10 @@ function setLegTableObject() {
         legData['imageParts']        = imageParts; 
         legData['furnitureType']     = [$('.furniture-container').attr('id'), $('.furniture-container').data('type-title')];
     } else {
-        console.log('Loading a table to be edited');
         loadCompletedTable();  
     }
     
     monitorImage();
-    
-    console.log(legData);
 }
 
 function loadCompletedTable() {
@@ -592,8 +587,6 @@ function loadCompletedTable() {
     getBuilds();
     
     legData = collection[$('#leg-table').data('edit')];
-    
-    console.log('running');
     
     for(step in legData) {
         if( step != 'dimensions' && 
@@ -609,10 +602,7 @@ function loadCompletedTable() {
                 .removeClass('selected');
              $('[data-step-id="' + step + '"]')   
                 .find('[data-option-id="' + legData[step].selected[0] + '"]')
-                .addClass('selected');
-                
-            console.log('[data-option-id="' + legData[step].selected[0] + '"]');
-        
+                .addClass('selected');        
         }
     }
     
@@ -671,7 +661,6 @@ function stepMovementControls() {
             for(var n = 0; n < $('.step').length; n++) {
                 if(moveForward(n, $steps, $activeStep) && !halt) {
                     var next = $steps.get($activeStep.index() + (n + 1));
-                    console.log($activeStep.index() + (n + 1));
                     $(next).addClass('active');
                     setRenderControls();                    
                     halt = true;
@@ -710,15 +699,12 @@ function writeToLocalStorage() {
         builds = JSON.parse(localStorage.getItem('builds'));
         if($('.furniture-container').attr('data-edit') === '') {
             builds.push(legData);
-            console.log('we are not editing');
         } else {
             builds[$('.furniture-container').attr('data-edit')] = legData;
-            console.log('we are editing');
         }
         localStorage.setItem('builds', JSON.stringify(builds));
     } else {
         var builds = [legData];
-        console.log('we are pushing into a brand new build');
         localStorage.setItem('builds', JSON.stringify(builds));
     }
     
@@ -750,9 +736,7 @@ function tabletopLegSizeController() {
 	
 	$('.measurement-controls .fa').click(function(e) {
 		e.preventDefault();
-		
-		console.log('A control was clicked for leg table sizing.');
-		
+
 		$button = $(this);
 		
 		var target = $button.data('table-target');
@@ -785,9 +769,7 @@ function updateLegTableData(button, target, action) {
                 .parents('.measurement-controls')
                 .find('.count')
                 .html(legTable[target]);
-            
-			console.log('Adjusting table length by ' + adjustAmount + '".');
-            console.log('Table length is now: '+legTable.length);
+
 		}
 	} else if(target == 'width') {
 		
@@ -813,8 +795,7 @@ function updateLegTableData(button, target, action) {
 	} else {
 
         if(legTable[target] + adjustAmount <= maxLegLeaves && legTable[target] + adjustAmount >= minLegLeaves) {
-            console.log('attempting to evaluate leaves on a round table.');
-            
+
             legTable[target] = legTable[target] + adjustAmount;
             
 			button

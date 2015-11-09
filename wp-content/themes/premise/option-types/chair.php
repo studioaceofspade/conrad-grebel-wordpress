@@ -36,6 +36,22 @@
     </div>
     
     <div class="option-settings">
+    
+        <?php
+        $id = $post->ID;
+        $user = wp_get_current_user();
+        $user_id = $user->ID;
+        if(have_rows('modify_retailer_price')) : 
+            while(have_rows('modify_retailer_price')) : the_row();
+                $mod_user = get_sub_field('retailer');
+                
+                if($user_id == $mod_user['ID']) :
+                
+                    echo '<div class="retailer-price-mod" data-mod-amount="'.get_sub_field('price_modification').'"></div>';
+                
+                endif;
+            endwhile; 
+        endif; ?>
         
         <!-- SECTION: Step Data ===================================== 
              ======================================================== -->

@@ -184,7 +184,6 @@ function setTableObject() {
         tableData['furnitureType']     = [$('.furniture-container').attr('id'), $('.furniture-container').data('type-title')];
 
     } else {
-        console.log('Loading a table to be edited');
         loadCompletedTable();  
     }
 
@@ -197,7 +196,6 @@ function setTableObject() {
     tableName = tableData['choose-a-pedestal-style'].selected[0];
     $selectedTable = $('[data-option-id="' + tableName + '"]').siblings('.option-settings');
     
-    console.log(tableName);
     
     baseRender = $selectedTable.find('.base-render').data('render');
     baseMasks  = $selectedTable.find('.base-render').data('masks').split(',');
@@ -209,8 +207,6 @@ function setTableObject() {
     if("diameter" in tableData.dimensions) {
     
         diam        = tableData.dimensions.diameter;
-        
-        console.log(diam);
         
         topRender   = $selectedEdge.find('.render-object[data-render-type="' + diam + '-round-top"]').data('render-image');
         topMasks    = $selectedEdge.find('.render-object[data-render-type="' + diam + '-round-top"]').data('render-masks').split(',');
@@ -233,14 +229,12 @@ function setTableObject() {
         }
         
         chain = createTableChain(ttop,tbase,apron,tableData.imageParts['top-color'],tableData.imageParts['bottom-color']);
-        console.log(chain);
 
         tableData.imageParts['chain'] = chain;
         $('.render .render-image').attr('src',chain);
     }
     configureReview();
     monitorImage();
-    console.log(tableData);
 }
 
 function reviewButtonController() {
@@ -270,7 +264,6 @@ function editButtonController() {
         $('.step.active').removeClass('active');
         $('.step[data-step-id="' + $(this).data('edit-step') + '"]').addClass('active');
         
-        console.log($('.step[data-step-id="' + $(this).data('edit-step') + '"]'));
         
         if(tableData.skips) {
             delete tableData.skips;
@@ -297,9 +290,7 @@ function loadCompletedTable() {
     getBuilds();
     
     tableData = collection[$('#single-pedestal-table').data('edit')];
-    
-    console.log('running');
-    
+
     for(step in tableData) {
         if( step != 'dimensions' && 
             step != 'imageParts' && 
@@ -315,8 +306,6 @@ function loadCompletedTable() {
              $('[data-step-id="' + step + '"]')   
                 .find('[data-option-id="' + tableData[step].selected[0] + '"]')
                 .addClass('selected');
-                
-            console.log('[data-option-id="' + tableData[step].selected[0] + '"]');
         
         }
     }
@@ -395,9 +384,6 @@ function moveBack(amount, steps, step) {
     var previous    = steps.get(step.index() - (amount+1));    
     var stepId      = $(previous).data('step-id');    
     
-    console.log(previous);
-    console.log(stepId);
-    
     if(tableData.skips.indexOf(stepId) < 0) {
         return true;
     } else {
@@ -423,15 +409,12 @@ function writeToLocalStorage() {
         builds = JSON.parse(localStorage.getItem('builds'));
         if($('.furniture-container').attr('data-edit') === '') {
             builds.push(tableData);
-            console.log('we are not editing');
         } else {
             builds[$('.furniture-container').attr('data-edit')] = tableData;
-            console.log('we are editing');
         }
         localStorage.setItem('builds', JSON.stringify(builds));
     } else {
         var builds = [tableData];
-        console.log('we are pushing into a brand new build');
         localStorage.setItem('builds', JSON.stringify(builds));
     }  
 }
@@ -546,7 +529,6 @@ function updateSinglePedTableData(button, target, action) {
 	// Handle the diameter
     
 	if(action == 'table-increase' && target == 'diameter') {   
-        console.log(ts.length);
         var key = 0;
         for(var i = 0; i < ts.length; i++) {
             if(ts[i].diameter == tableSize.diameter) {
@@ -590,7 +572,6 @@ function updateSinglePedTableData(button, target, action) {
         if(parseInt(tableSize.leaves) + 1 <= ts[key].leaves) {
             // Set it to the next value in the width array
             tableSize.leaves = parseInt(tableSize.leaves) + 1;
-            console.log('Increasing leaves');
         }
     } else if (action == 'table-decrease' && target == 'leaves') {
         var key = 0;
@@ -602,7 +583,6 @@ function updateSinglePedTableData(button, target, action) {
         if(parseInt(tableSize.leaves) - 1 >= 0) {
             // Set it to the next value in the width array
             tableSize.leaves = parseInt(tableSize.leaves) - 1;
-            console.log('Decreasing leaves');
         }
     }
 
@@ -630,8 +610,6 @@ function setSinglePedTableSize() {
         if(leaves >= 2) {
             chairCount += 2;
         }
-        console.log(leaves);
-        console.log(chairCount);
     } else {
         chairCount = 6;
         if(leaves >= 1) {
@@ -822,6 +800,7 @@ function setTablePricing() {
     var addons      = new Array();
     var percents    = new Array();
     var amount      = 0;
+    var retailerMod = 0;
     
     for (var step in tableData) {
         
@@ -851,8 +830,6 @@ function setTablePricing() {
                         
                         if(tableData[step].pricing.options[option].type == 'flat') {
                             if(tableData['selectedReference'].indexOf(option) != -1) {
-                                console.log(step);
-                                console.log(option);
                                 addons.push(tableData[step].pricing.options[option].rate);
                             }
                         } else if(tableData[step].pricing.options[option].type == 'percentage') {
@@ -864,6 +841,11 @@ function setTablePricing() {
                 }
                 
             } 
+            var $selected = $('[data-step-id="' + step + '"]').find('.selected');
+            var $options = $selected.siblings('.option-settings');
+            if($options.find('.retailer-price-mod').length > 0) {
+                retailerMod += $options.find('.retailer-price-mod').data('mod-amount');
+            }
         }
     }
 
@@ -896,6 +878,7 @@ function setTablePricing() {
         amount      = table.pricing.cherry;  
     }
     
+    amount += retailerMod;
     
     var addonTotal = 0;
     for (var x = 0; x < addons.length; x++) {

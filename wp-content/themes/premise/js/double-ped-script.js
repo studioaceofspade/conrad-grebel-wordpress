@@ -279,6 +279,7 @@ function setTablePricing() {
     var addons      = new Array();
     var percents    = new Array();
     var amount      = 0;
+    var retailerMod = 0;
     
     for (var step in tableData) {
         
@@ -318,6 +319,12 @@ function setTablePricing() {
                 }
                 
             } 
+            
+            var $selected = $('[data-step-id="' + step + '"]').find('.selected');
+            var $options = $selected.siblings('.option-settings');
+            if($options.find('.retailer-price-mod').length > 0) {
+                retailerMod += $options.find('.retailer-price-mod').data('mod-amount');
+            }
         }
     }
 
@@ -349,6 +356,7 @@ function setTablePricing() {
         amount      = table.pricing.cherry;  
     }
 
+    amount += retailerMod;
     
     var addonTotal = 0;
     for (var x = 0; x < addons.length; x++) {

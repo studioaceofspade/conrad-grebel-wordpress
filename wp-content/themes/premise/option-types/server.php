@@ -36,6 +36,22 @@
     </div>
     
     <div class="option-settings">
+    
+        <?php
+        $id = $post->ID;
+        $user = wp_get_current_user();
+        $user_id = $user->ID;
+        if(have_rows('modify_retailer_price')) : 
+            while(have_rows('modify_retailer_price')) : the_row();
+                $mod_user = get_sub_field('retailer');
+                
+                if($user_id == $mod_user['ID']) :
+                
+                    echo '<div class="retailer-price-mod" data-mod-amount="'.get_sub_field('price_modification').'"></div>';
+                
+                endif;
+            endwhile; 
+        endif; ?>
         
         <!-- SECTION: Step Data ===================================== 
              ======================================================== -->
@@ -158,32 +174,27 @@
         <div 
             class="hinge-render"
             data-render-image="<?php echo $render_image; ?>"
-            data-render-masks="<?php echo $render_masks; ?>"
-            data-render-texture="<?php the_field('hinge_texture'); ?>">
+            data-render-masks="<?php echo $render_masks; ?>">
         </div>
         <?php endif; ?>
         
-        <?php if(have_rows('glass_renders')) : ?>
-        
-            <?php while(have_rows('glass_renders')) : the_row(); 
-                $render         = array_pop(get_sub_field('render'));
-                $render_image   = get_field('image_url', $render->ID);
-                $render_masks   = '';
-                
-                foreach(get_field('masks', $render->ID) as $mask_url) :
-                    $render_masks .= $mask_url['mask_url'].',';
-                endforeach;
-                $render_masks = rtrim($render_masks,',');
-                
-                $related_object = array_pop(get_sub_field('related_option'));
-                $related_option = $related_object->post_name; ?>
+        <?php
+        if(get_field('glass_render')) :         
+            $render         = array_pop(get_field('glass_render'));
+            $render_image   = get_field('image_url', $render->ID);
+            $render_masks   = '';
+            
+            foreach(get_field('masks', $render->ID) as $mask_url) :
+                $render_masks .= $mask_url['mask_url'].',';
+            endforeach;
+            $render_masks = rtrim($render_masks,',');
+        ?>
         <div 
-            class="glass-render"
-            data-related-option="<?php echo $related_option; ?>"
+            class="hinge-render"
             data-render-image="<?php echo $render_image; ?>"
-            data-render-masks="<?php echo $render_masks; ?>">
+            data-render-masks="<?php echo $render_masks; ?>"
+            data-render-texture="<?php the_field('hinge_texture'); ?>">
         </div>
-            <?php endwhile; ?>
         <?php endif; ?>
         
         <!-- SECTION: Hutch Render data ===============================

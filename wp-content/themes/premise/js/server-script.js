@@ -445,6 +445,7 @@ function setServerPricing() {
     var addons      = new Array();
     var percents    = new Array();
     var amount      = 0;
+    var retailerMod = 0;
     
     for (var step in serverData) {
         
@@ -484,6 +485,11 @@ function setServerPricing() {
                 }
                 
             } 
+            var $selected = $('[data-step-id="' + step + '"]').find('.selected');
+            var $options = $selected.siblings('.option-settings');
+            if($options.find('.retailer-price-mod').length > 0) {
+                retailerMod += $options.find('.retailer-price-mod').data('mod-amount');
+            }
         }
     }
 
@@ -511,6 +517,8 @@ function setServerPricing() {
     }
     
     console.log(amount);
+    
+    amount += retailerMod;
     
     var drawerCost = 0;
     if(serverData.skips.indexOf('choose-your-drawer-type') <= 0) {

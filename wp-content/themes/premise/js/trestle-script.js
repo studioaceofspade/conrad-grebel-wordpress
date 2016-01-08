@@ -230,7 +230,6 @@ function setTableObject() {
     console.log(tableData);
 }
 
-
 function reviewButtonController() {
     $('.review-jump').click(function(e) {
         e.preventDefault();
@@ -330,19 +329,19 @@ function setTablePricing() {
     var sqin            = parseInt(tableSize.width) * parseInt(tableSize.tlength);
     
     if(sqin > 2552 && sqin < 2801) {
-        dimensionAddon = 125;
-    } else if (sqin >= 2801 && sqin < 3073) {
-        dimensionAddon = 150;
+        dimensionAddon = 0;
+    } else if (sqin >= 2801 && sqin < 3025) {
+        dimensionAddon = 0;
     } else if (sqin >= 3073 && sqin < 3361) {
-        dimensionAddon = 175;
+        dimensionAddon = 125;
     } else if (sqin >= 3361 && sqin < 3697) {
-        dimensionAddon = 200;
+        dimensionAddon = 150;
     } else if (sqin >= 3697 && sqin < 3961) {
-        dimensionAddon = 225;
+        dimensionAddon = 175;
     } else if (sqin >= 3961 && sqin < 4325) {
-        dimensionAddon = 250;
-    } else if (sqin >= 4609) {
-        dimensionAddon = 275;
+        dimensionAddon = 200;
+    } else if (sqin >= 4326) {
+        dimensionAddon = 225;
     }
     
     tableData.dimensions.sizePrice = dimensionAddon;
@@ -361,17 +360,33 @@ function setTablePricing() {
     }
 
     amount += retailerMod;
+    amount += dimensionAddon;
+    amount += leafAddon;
     
     var addonTotal = 0;
     for (var x = 0; x < addons.length; x++) {
         addonTotal += addons[x];
     }
     
+    var percentTotal = 1;
+    
     for (var y = 0; y < percents.length; y++) {
-        amount      = amount * (1 + percents[y]/100);
+        percentTotal += (percents[y]/100);     
+    }
+    
+    var hasTwoPremium = false;
+    
+    if(typeof tableData['choose-a-bottom-color-'+wood].pricing.percent != 'undefined' && typeof tableData['choose-a-top-color-'+wood].pricing.percent != 'undefined' ) {
+        hasTwoPremium = true;
+    }    
+    
+    if(hasTwoPremium) {
+        percentTotal -= .1;
     }
 
-    var final = amount + addonTotal + dimensionAddon + leafAddon;
+    amount = amount * percentTotal;
+
+    var final = amount + addonTotal;
     
     var cgPrice = final;
     

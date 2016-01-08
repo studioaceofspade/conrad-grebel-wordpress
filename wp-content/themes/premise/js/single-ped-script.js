@@ -659,8 +659,7 @@ function configureReview() {
     $('.dp-table-style').html(tableData['choose-a-pedestal-style'].selected[1]);   
     $('.dp-table-style-cost').html('$' + oakCost.toFixed(2));
 
-    
-        // Model
+    // Model
     $('.model').html(tableData['choose-a-pedestal-style'].model);
 
     $('.dp-table-style-edit')
@@ -852,12 +851,17 @@ function setTablePricing() {
     var dAddon  = 0;
     var diameter        = tableData.dimensions.diameter;
     
-    if(diameter >= 48 && diameter < 54) {
-        dAddon = 75;
-    } else if (diameter >= 54 && diameter < 60) {
-        dAddon = 125;
-    } else if (diameter >= 60) {
-        dAddon = 175;
+    var $tableOptions = $('[data-option-id="' + table.selected[0] + '"]').siblings('.option-settings');
+    var $available42 = $tableOptions.find('[data-size-available="42"]');
+    
+    if($available42.length > 0) {
+        if(diameter >= 48 && diameter < 54) {
+            dAddon = 75;
+        } else if (diameter >= 54 && diameter < 60) {
+            dAddon = 125;
+        } else if (diameter >= 60) {
+            dAddon = 175;
+        }
     }
     
     $selected = $('[data-step-id="choose-a-pedestal-style"]').find('.selected').siblings('.option-settings');
@@ -878,18 +882,37 @@ function setTablePricing() {
         amount      = table.pricing.cherry;  
     }
     
+    console.log("Retailer Mod: " + retailerMod);
+    
     amount += retailerMod;
+    amount += leafAddon;
+    amount += dAddon;
     
     var addonTotal = 0;
     for (var x = 0; x < addons.length; x++) {
         addonTotal += addons[x];
     }
     
-    for (var y = 0; y < percents.length; y++) {
-        amount      = amount * (1 + percents[y]/100);
-    }
+    var percentTotal = 1;
     
-    var final = amount + addonTotal + dAddon + leafAddon;
+    for (var y = 0; y < percents.length; y++) {
+        
+        percentTotal += (percents[y]/100);    
+        
+    }
+    var hasTwoPremium = false;
+    
+    if(typeof tableData['choose-a-bottom-color-'+wood].pricing.percent != 'undefined' && typeof tableData['choose-a-top-color-'+wood].pricing.percent != 'undefined' ) {
+        hasTwoPremium = true;
+    }    
+    
+    if(hasTwoPremium) {
+        percentTotal -= .1;
+    }
+
+    amount = amount * percentTotal;
+    
+    var final = amount + addonTotal;
     var cgPrice = final;
     
     // Set the pricing by retailer rules
@@ -909,7 +932,6 @@ function setTablePricing() {
     if($('.retailer-meta').data('freight-mod') > 0 && strTest.length > 0) {
         retailerWithFreight = retailerBase * (($('.retailer-meta').data('freight-mod') + 100)/100);
     }
-    
     
     // Calculate the price without rounding rules
     var retailerFinalBeforeRounding = ($('.retailer-meta').data('price-mod') / 100) * retailerWithFreight;

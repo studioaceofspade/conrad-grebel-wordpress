@@ -37,10 +37,25 @@
     
     <div class="option-settings">
     
+        <?php if(have_rows('hides')) : ?>
+            <?php 
+            while(have_rows('hides')) : the_row(); 
+            $hide = get_sub_field('option_to_hide');            
+            $h = array_pop($hide);
+            ?>
+        <div class="hide-option" data-hide="<?php echo $h->post_name; ?>"></div>
+            <?php endwhile; ?>
+        <?php endif; ?>
+    
         <?php
         $id = $post->ID;
         $user = wp_get_current_user();
         $user_id = $user->ID;
+        
+        if($user_id == '17') {
+            $user_id = 16;
+        }
+                
         if(have_rows('modify_retailer_price')) : 
             while(have_rows('modify_retailer_price')) : the_row();
                 $mod_user = get_sub_field('retailer');

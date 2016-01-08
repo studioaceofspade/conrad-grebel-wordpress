@@ -188,6 +188,12 @@ function setLegTablePricing() {
     var addons      = new Array();
     var percents    = new Array();
     var retailerMod = 0;
+   
+    var wood = false;
+    
+    if('choose-a-wood-type' in legData) {
+       var wood        = legData['choose-a-wood-type'].selected[0];
+    }
     
     for (var step in legData) {
         
@@ -235,12 +241,35 @@ function setLegTablePricing() {
     }
     
     var prePercentagePrice = addonTotal + legData.dimensions.price;
+    
     legData.dimensions.seats = seats;
     
+    var percentTotal = 1;
+    
     for (var y = 0; y < percents.length; y++) {
-        prePercentagePrice = prePercentagePrice * (1 + percents[y]/100);
+        
+        percentTotal += (percents[y]/100);    
         
     }
+    
+    var hasTwoPremium = false;
+    
+    console.log(wood);
+    
+    if(wood) {
+        if('choose-a-bottom-color-'+wood in legData && 'choose-a-top-color-'+wood in legData) {
+            if(typeof legData['choose-a-bottom-color-'+wood].pricing.percent != 'undefined' && typeof legData['choose-a-top-color-'+wood].pricing.percent != 'undefined' ) {
+                hasTwoPremium = true;
+            } 
+        }
+    }
+
+    
+    if(hasTwoPremium) {
+        percentTotal -= .1;
+    }
+
+    prePercentagePrice = prePercentagePrice * percentTotal;
     
     // Configure our base price based on the catalog
     // var cgPrice = (prePercentagePrice * ($('.retailer-meta').data('price-mod') / 100)).toFixed(2);
@@ -410,13 +439,14 @@ function pricingByDimensions() {
     if('choose-a-thickness' in legData) {
         if(legData['choose-a-thickness'].selected[0] == '1-thick') {
             if(tableLeaves > 1) {
-                calculatedPrice += (tableLeaves-1)*80;
-            }
-        } else {
-            if(tableLeaves > 1) {
                 calculatedPrice += ((tableLeaves-1)*80)*1.3;
             }
+        } else {
 
+            if(tableLeaves > 1) {
+                calculatedPrice += (tableLeaves-1)*80;
+                console.log(tableLeaves);
+            }
         }
     }
     

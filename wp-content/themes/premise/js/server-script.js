@@ -20,7 +20,6 @@ function setHardwareDefault() {
                         .siblings('.option-settings')
                         .find('.default-hardware')
                         .data('default-hardware');
-          
     $('[data-step-id="choose-your-hardware"]').find('.selected').removeClass('selected');
     $('[data-step-id="choose-your-hardware"]').find('[data-option-id="'+hardware+'"]').addClass('selected');   
     
@@ -205,7 +204,12 @@ function setServerObject() {
 
     // Find our selected server, hardware, and hutch
     server      = serverData['choose-a-server-style'].selected[0];
-    hardware    = serverData['choose-your-hardware'].selected[0];
+    
+    if('choose-your-hardware' in serverData) {
+        hardware    = serverData['choose-your-hardware'].selected[0];
+    } else {
+        hardware = $('[data-step-id="choose-your-hardware"]').find('.selected').data('option-id');
+    }
     if('choose-your-glass' in serverData) {
         glass    = serverData['choose-your-glass'].selected[0];
     }
@@ -240,8 +244,7 @@ function setServerObject() {
     } else {
         hasHinge = false;
     }
-    
-    console.log(hingeRender);
+
     
     // Grab our glass information
     var hasGlass = true;
@@ -321,10 +324,6 @@ function setServerObject() {
     } else {
         glass = false;
     }
-    
-    console.log(glass);
-    
-    console.log(hinge);
     
     // If we have a hutch and it is selected
     var hasHutch = true;
@@ -537,11 +536,29 @@ function setServerPricing() {
     
     addonTotal += drawerCost;
     
-    console.log(addonTotal);
+    var percentTotal = 1;
     
     for (var y = 0; y < percents.length; y++) {
-        amount      = amount * (1 + percents[y]/100);
+        
+        percentTotal += (percents[y]/100);    
+        
     }
+    
+    var hasTwoPremium = false;
+    
+    if( (('choose-a-base-color-'+wood) in serverData) && 
+        (('choose-a-door-drawer-color-'+wood) in serverData)) {
+            
+        if(typeof serverData['choose-a-base-color-'+wood].pricing.percent != 'undefined' && typeof serverData['choose-a-door-drawer-color-'+wood].pricing.percent != 'undefined' ) {
+            hasTwoPremium = true;
+        }    
+    }
+    
+    if(hasTwoPremium) {
+        percentTotal -= .1;
+    }
+    
+    amount = amount * percentTotal;
 
     var final = amount + addonTotal;
     var cgPrice = final;
@@ -638,8 +655,13 @@ function configureReview() {
     $('.server-wood-type-edit').html('<a href="#" class="edit" data-edit-step="choose-a-wood-type">Edit</a>');
     
     // Hardware
-    $('.server-hardware').html(serverData['choose-your-hardware'].selected[1]);
-    $('.server-hardware-edit').html('<a href="#" class="edit" data-edit-step="choose-your-hardware">Edit</a>');
+    
+    if('choose-your-hardware' in serverData) {
+        $('.server-hardware').html(serverData['choose-your-hardware'].selected[1]);
+        $('.server-hardware-edit').html('<a href="#" class="edit" data-edit-step="choose-your-hardware">Edit</a>');
+    } else {
+        $('.server-hardware').html('Default');
+    }
     
     // Glass
     if('choose-your-glass' in serverData) {
@@ -901,7 +923,30 @@ function optionSelectControls() {
             delete serverData.skips;
         }
         
+        $('.box').each(function(){
+            $(this).parent("div[class^='col-']").show();
+        });
+        
         if($box.parents('.step').attr('data-step-id') == 'choose-a-server-style') {
+            
+            var $hides = $box.siblings('.option-settings').find('.hide-option');
+            
+            if($hides.length > 0) {
+                
+                $hides.each(function() {
+                    
+                    $hide = $('[data-option-id="'+$(this).data('hide')+'"]')
+                    
+                    if($hide.hasClass('selected')) {
+                        $hide.removeClass('selected');
+                        $hide.parents('.options').find('.box').first().addClass('selected');
+                    }
+                    
+                    $hide.parent("div[class^='col-']").hide();
+                    
+                });
+            }
+            
             setHardwareDefault();
         }
         

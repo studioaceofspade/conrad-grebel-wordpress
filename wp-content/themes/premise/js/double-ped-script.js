@@ -230,7 +230,6 @@ function setTableObject() {
     console.log(tableData);
 }
 
-
 function reviewButtonController() {
     $('.review-jump').click(function(e) {
         e.preventDefault();
@@ -357,17 +356,37 @@ function setTablePricing() {
     }
 
     amount += retailerMod;
+    amount += dimensionAddon;
+    amount += leafAddon;
+    
     
     var addonTotal = 0;
     for (var x = 0; x < addons.length; x++) {
         addonTotal += addons[x];
     }
     
+    
+    var percentTotal = 1;
+    
     for (var y = 0; y < percents.length; y++) {
-        amount      = amount * (1 + percents[y]/100);
+        
+        percentTotal += (percents[y]/100);    
+        
+    }
+    
+    var hasTwoPremium = false;
+    
+    if(typeof tableData['choose-a-bottom-color-'+wood].pricing.percent != 'undefined' && typeof tableData['choose-a-top-color-'+wood].pricing.percent != 'undefined' ) {
+        hasTwoPremium = true;
+    }    
+    
+    if(hasTwoPremium) {
+        percentTotal -= .1;
     }
 
-    var final = amount + addonTotal + dimensionAddon + leafAddon;
+    amount = amount * percentTotal;
+    
+    var final = amount + addonTotal;
     
     var cgPrice = final;
     

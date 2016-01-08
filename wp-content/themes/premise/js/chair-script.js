@@ -140,15 +140,32 @@ function setChairPricing() {
         amount      = chair.pricing.cherry;
         amountArms  = chair.pricing['cherry-arms'];  
     }
+
+    if(amountArms == '') {
+        amountArms = 0;
+    }
+
+
+    if(chair.pricing.fabric == '') {
+        fabricAddon = 0;
+    } else {
+        fabricAddon = chair.pricing.fabric;
+    }
     
     if(seat == 'fabric-seat') {
-        amount      += chair.pricing.fabric;
-        amountArms  += chair.pricing.fabric
+        amount      += fabricAddon;
+        amountArms  += fabricAddon;
+    }
+    
+    if(chair.pricing.leather == '') {
+        leatherAddon = 0;
+    } else {
+        leatherAddon = chair.pricing.leather;
     }
     
     if(seat == 'leather-seat') {
-        amount      += chair.pricing.leather;
-        amountArms  += chair.pricing.leather
+        amount      += leatherAddon;
+        amountArms  += leatherAddon;
     }
     
     var addonTotal = 0;
@@ -159,10 +176,31 @@ function setChairPricing() {
     var amount      = addonTotal + amount + retailerMod;
     var amountArms  = addonTotal + amountArms + retailerMod;
     
-    for (var y = 0; y < percents.length; y++) {
-        amount      = amount * (1 + percents[y]/100);
-        amountArms  = amount * (1 + percents[y]/100);
+    var hasTwoPremium = false;
+    
+    if( (('choose-a-base-color-'+wood) in chairData) && 
+        (('choose-a-seat-color-'+wood) in chairData)) {
+            
+        if(typeof chairData['choose-a-base-color-'+wood].pricing.percent != 'undefined' && typeof chairData['choose-a-seat-color-'+wood].pricing.percent != 'undefined' ) {
+            hasTwoPremium = true;
+        }    
     }
+
+    var percentTotal = 1;
+    
+    for (var y = 0; y < percents.length; y++) {
+        
+        percentTotal += (percents[y]/100);    
+        
+    }
+    
+    
+    if(hasTwoPremium) {
+        percentTotal -= .1;
+    }
+    
+    amount      = amount * percentTotal;
+    amountArms  = amount * percentTotal
     
     amountSide = amount;
     amountArm  = amountArms;
@@ -407,7 +445,6 @@ function configureReview() {
         } 
     }
     $review.find('.chair-side-cost span').html($('.single-side-price').html());
-    console.log(chairData.armAmount);
     $review.find('.chair-arms-cost span').html($('.single-arm-price').html());
     editButtonController();
 }
@@ -491,9 +528,6 @@ function setChairObject() {
         } else {
             var changingChair = false;
         }
-        
-        console.log(changingChair);
-        console.log(hasWood);
         
         // check to see if we need to change selected seat
         if(changingChair && !hasWood) {

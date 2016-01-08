@@ -41,6 +41,11 @@
         $id = $post->ID;
         $user = wp_get_current_user();
         $user_id = $user->ID;
+        
+        if($user_id == '17') {
+            $user_id = 16;
+        }
+        
         if(have_rows('modify_retailer_price')) : 
             while(have_rows('modify_retailer_price')) : the_row();
                 $mod_user = get_sub_field('retailer');
